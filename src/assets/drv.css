@@ -1,0 +1,20 @@
+@import './css/style.css';
+@import './css/bootstrap.css';
+@import './css/font-awesome.css';
+@import './css/ionicons.css';
+/* @import './css/plugin/jPushMenu.css'; */
+/* @import './css/plugin/animate.css'; */
+/* @import './css/jquery-ui.css'; */
+/* @import './css/accordion.css'; */
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* <link href="css/style.css" rel="stylesheet" type="text/css" />
+	<link href="css/bootstrap.css" rel="stylesheet" type="text/css" />
+	<link href="css/font-awesome.css" rel="stylesheet" type="text/css" />
+	<link href="css/ionicons.css" rel="stylesheet" type="text/css" />
+	<link href="css/plugin/jPushMenu.css" rel="stylesheet" type="text/css" />
+	<link href="css/plugin/animate.css" rel="stylesheet" type="text/css" />
+	<link href="css/jquery-ui.css" rel="stylesheet" type="text/css" /> */

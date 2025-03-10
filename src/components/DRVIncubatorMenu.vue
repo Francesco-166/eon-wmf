@@ -1,0 +1,32 @@
+<template>
+  <nav class="navigation">
+    <ul>
+      <li>
+        <RouterLink to="/">Home</RouterLink>
+      </li>
+      <li>
+        <a> Arztbrief </a>
+        <ul class="nav-dropdown">
+          <li>
+            <RouterLink to="/arztbrief-backend">Backend</RouterLink>
+          </li>
+          <li>
+            <RouterLink to="/arztbrief-feedback">Feedback</RouterLink>
+          </li>
+          <li>
+            <RouterLink to="/arztbrief-summarizer">Zusammenfassung</RouterLink>
+          </li>
+        </ul>
+      </li>
+      <li>
+        <RouterLink to="/anamnese-generator">Anamnese-Generator</RouterLink>
+      </li>
+      <li>
+        <RouterLink to="/anonymizer">Anonymizer</RouterLink>
+      </li>
+      <li>
+        <RouterLink to="/pflegegutachten">Pflegegutachten</RouterLink>
+      </li>
+    </ul>
+  </nav>
+</template>
