@@ -8,11 +8,14 @@
         <a> Arztbrief </a>
         <ul class="nav-dropdown">
           <li>
-            <RouterLink to="/arztbrief-backend">Backend</RouterLink>
+            <a href="https://www.eservicet-drv.de/klinik_web/login.html">
+              Arztbrief-Generator (externer Link)</a
+            >
+            <!-- <RouterLink to="/arztbrief-backend">Backend</RouterLink> -->
           </li>
-          <li>
+          <!-- <li>
             <RouterLink to="/arztbrief-feedback">Feedback</RouterLink>
-          </li>
+          </li> -->
           <li>
             <RouterLink to="/arztbrief-summarizer">Zusammenfassung</RouterLink>
           </li>

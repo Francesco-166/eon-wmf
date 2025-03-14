@@ -99,16 +99,19 @@ onMounted(() => {
           <br />
           <h2>Generator</h2>
           <p>
-            <RouterLink to="/arztbrief-backend">Arztbrief-Generator </RouterLink>
+            <a href="https://www.eservicet-drv.de/klinik_web/login.html">
+              Arztbrief-Generator (externer Link)</a
+            >
+            <!-- <RouterLink to="/arztbrief-backend">Arztbrief-Generator </RouterLink> -->
           </p>
           <h2>Summarizer</h2>
           <p>
             <RouterLink to="/arztbrief-summarizer">Arztbrief-Summarizer </RouterLink>
           </p>
-          <h2>Feedback</h2>
+          <!-- <h2>Feedback</h2>
           <p>
             <RouterLink to="/arztbrief-feedback">Arztbrief-Feedback </RouterLink>
-          </p>
+          </p> -->
         </div>
       </div>
       <div class="col-md-6 mb-30">

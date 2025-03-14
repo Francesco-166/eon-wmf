@@ -56,7 +56,7 @@ onMounted(() => {
       <transition name="fade">
         <div v-if="animateMapSection">
           <iframe
-            src="https://arztbrief-backend.1dc7pfjky15y.eu-de.codeengine.appdomain.cloud/"
+            src="https://www.eservicet-drv.de/klinik_web/login.html"
             width="100%"
             height="1000"
             frameborder="0"
