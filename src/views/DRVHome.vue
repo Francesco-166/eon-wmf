@@ -145,7 +145,10 @@ onMounted(() => {
           <br />
           <h2>Anonymizer</h2>
           <p>
-            <RouterLink to="/anonymizer">Anonymizer </RouterLink>
+            <a href="https://demo-ui.1dp3xfijfbm1.eu-de.codeengine.appdomain.cloud">
+              Anonymizer (externer Link)</a
+            >
+            <!-- <RouterLink to="/anonymizer">Anonymizer </RouterLink> -->
           </p>
         </div>
       </div>

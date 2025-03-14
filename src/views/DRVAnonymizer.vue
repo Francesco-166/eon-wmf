@@ -56,7 +56,7 @@ onMounted(() => {
       <transition name="fade">
         <div v-if="animateMapSection">
           <iframe
-            src="https://anamnese-generator.1dc7pfjky15y.eu-de.codeengine.appdomain.cloud"
+            src="https://demo-ui.1dp3xfijfbm1.eu-de.codeengine.appdomain.cloud"
             width="100%"
             height="1000"
             frameborder="0"

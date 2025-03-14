@@ -1169,7 +1169,8 @@ img {
 a {
   cursor: pointer;
   text-decoration: none;
-  color: #00bdbd;
+  /* color: #00bdbd; */
+  color: #000000;
   transition: all 0.25s ease 0s;
   -moz-transition: all 0.25s ease 0s;
   -webkit-transition: all 0.25s ease 0s;
@@ -1455,12 +1456,24 @@ li.link a:hover,
 }
 
 h1,
-h2,
 h3,
 h4,
 h5,
 h6 {
-  color: #00bdbd;
+  /* color: #00bdbd; */
+  color: rgba(110, 129, 159, 0.85);
+  /*
+    text-transform: uppercase;
+*/
+  font-family: 'Poppins', 'Montserrat', 'Raleway', sans-serif;
+  font-weight: 700;
+  margin-top: 0px;
+  margin-bottom: 2px;
+}
+
+h2 {
+  /* color: #00bdbd; */
+  color: rgba(212, 219, 83, 0.85);
   /*
     text-transform: uppercase;
 */
