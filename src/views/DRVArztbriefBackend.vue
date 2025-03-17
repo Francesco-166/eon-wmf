@@ -15,8 +15,8 @@ import { onMounted, ref } from 'vue'
 // })
 
 let oberserverFiredFirstTime = false
-const mapSection = ref<Element>()
-const animateMapSection = ref<boolean>(false)
+const iFrameSection = ref<Element>()
+const animateIFrameSection = ref<boolean>(false)
 
 const observer = new IntersectionObserver(
   ([entry]) => {
@@ -25,9 +25,9 @@ const observer = new IntersectionObserver(
       //   console.log(entry.isIntersecting);
       oberserverFiredFirstTime = false
     } else if (entry.isIntersecting) {
-      if (entry.target == mapSection.value) {
-        console.log('mapSection animation')
-        animateMapSection.value = entry.isIntersecting
+      if (entry.target == iFrameSection.value) {
+        console.log('iFrameSection animation')
+        animateIFrameSection.value = entry.isIntersecting
       }
       observer.unobserve(entry.target)
     }
@@ -39,9 +39,9 @@ const observer = new IntersectionObserver(
 
 onMounted(() => {
   //   console.log("onMounted");
-  if (mapSection.value) {
-    // console.log("mapSection exists, starting observation");
-    observer.observe(mapSection.value as Element)
+  if (iFrameSection.value) {
+    // console.log("iFrameSection exists, starting observation");
+    observer.observe(iFrameSection.value as Element)
   }
 })
 </script>
@@ -51,10 +51,10 @@ onMounted(() => {
 
   <section>
     <!-- <div class="container"> -->
-    <div ref="mapSection">
+    <div ref="iFrameSection">
       <!-- <div class="col-md-12 mb-30"> -->
       <transition name="fade">
-        <div v-if="animateMapSection">
+        <div v-if="animateIFrameSection">
           <iframe
             src="https://www.eservicet-drv.de/klinik_web/login.html"
             width="100%"

@@ -52,6 +52,11 @@ const router = createRouter({
       name: 'anonymizer',
       component: () => import('../views/DRVAnonymizer.vue'),
     },
+    {
+      path: '/patienten-uebersicht',
+      name: 'patienten-uebersicht',
+      component: () => import('../views/DRVPatientenUebersicht.vue'),
+    },
   ],
 })
 

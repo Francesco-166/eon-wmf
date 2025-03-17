@@ -138,7 +138,7 @@ onMounted(() => {
           </p>
         </div>
       </div>
-      <div class="col-md-6 mb-30">
+      <!-- <div class="col-md-6 mb-30">
         <div class="box_feature_3">
           <h1>Anonymizer</h1>
           <br />
@@ -148,8 +148,16 @@ onMounted(() => {
             <a href="https://demo-ui.1dp3xfijfbm1.eu-de.codeengine.appdomain.cloud">
               Anonymizer (externer Link)</a
             >
-            <!-- <RouterLink to="/anonymizer">Anonymizer </RouterLink> -->
           </p>
+        </div>
+      </div> -->
+      <div class="col-md-6 mb-30">
+        <div class="box_feature_3">
+          <h1>Patientenübersicht</h1>
+          <br />
+          <br />
+          <h2>Patientenübersicht</h2>
+          <RouterLink to="/patienten-uebersicht">Patientenübersicht</RouterLink>
         </div>
       </div>
     </div>

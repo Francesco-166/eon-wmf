@@ -24,9 +24,11 @@
       <li>
         <RouterLink to="/anamnese-generator">Anamnese-Generator</RouterLink>
       </li>
-      <li>
+      <!-- <li>
         <a href="https://demo-ui.1dp3xfijfbm1.eu-de.codeengine.appdomain.cloud"> Anonymizer</a>
-        <!-- <RouterLink to="/anonymizer">Anonymizer</RouterLink> -->
+      </li> -->
+      <li>
+        <RouterLink to="/patienten-uebersicht">Patientenübersicht</RouterLink>
       </li>
       <li>
         <RouterLink to="/pflegegutachten">Pflegegutachten</RouterLink>

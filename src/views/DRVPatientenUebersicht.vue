@@ -2,18 +2,6 @@
 // import { useHead } from '@unhead/vue'
 import { onMounted, ref } from 'vue'
 
-// const title = 'Kletterwald München – Anfahrt'
-// const myPage = ref({
-//   description:
-//     'Anfahrt zum Kletterwald München ✅ Mit öffentlichen ✅ Tram 26 oder S7 ✅ und mit dem PKW',
-// })
-// useHead({
-//   // ref (recommended)
-//   title,
-//   // computed getter (recommended)
-//   meta: [{ name: 'description', content: () => myPage.value.description }],
-// })
-
 let oberserverFiredFirstTime = false
 const iFrameSection = ref<Element>()
 const animateIFrameSection = ref<boolean>(false)
@@ -56,7 +44,7 @@ onMounted(() => {
       <transition name="fade">
         <div v-if="animateIFrameSection">
           <iframe
-            src="https://demo-ui.1dp3xfijfbm1.eu-de.codeengine.appdomain.cloud"
+            src="https://patient-summary-route-mla.ohpdemo01-990e7b837f1894cb67c000b2ea26e354-0000.eu-de.containers.appdomain.cloud/#/cp-dashboard/0000-0001"
             width="100%"
             height="1000"
             frameborder="0"
