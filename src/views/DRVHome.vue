@@ -157,6 +157,13 @@ onMounted(() => {
           <br />
           <br />
           <h2>Patientenübersicht</h2>
+          <p>
+            <a
+              href="https://patient-summary-route-mla.ohpdemo01-990e7b837f1894cb67c000b2ea26e354-0000.eu-de.containers.appdomain.cloud/#/cp-dashboard/0000-0001"
+            >
+              Patientenübersicht (externer Link)</a
+            >
+          </p>
           <RouterLink to="/patienten-uebersicht">Patientenübersicht</RouterLink>
         </div>
       </div>
