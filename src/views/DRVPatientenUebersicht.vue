@@ -2,16 +2,16 @@
 // import { useHead } from '@unhead/vue'
 import { onMounted, ref } from 'vue'
 
-let oberserverFiredFirstTime = false
+let observerFiredFirstTime = false
 const iFrameSection = ref<Element>()
 const animateIFrameSection = ref<boolean>(false)
 
 const observer = new IntersectionObserver(
   ([entry]) => {
     // console.log(entry.target);
-    if (oberserverFiredFirstTime == true) {
+    if (observerFiredFirstTime == true) {
       //   console.log(entry.isIntersecting);
-      oberserverFiredFirstTime = false
+      observerFiredFirstTime = false
     } else if (entry.isIntersecting) {
       if (entry.target == iFrameSection.value) {
         console.log('iFrameSection animation')

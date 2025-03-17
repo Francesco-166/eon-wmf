@@ -36,16 +36,16 @@ const drvIncubatorApps = [
   },
 ]
 
-let oberserverFiredFirstTime = false
+let observerFiredFirstTime = false
 const masonrySection = ref<Element>()
 const animateMasonrySection = ref<boolean>(false)
 
 const observer = new IntersectionObserver(
   ([entry]) => {
     // console.log(entry.target);
-    if (oberserverFiredFirstTime == true) {
+    if (observerFiredFirstTime == true) {
       //   console.log(entry.isIntersecting);
-      oberserverFiredFirstTime = false
+      observerFiredFirstTime = false
     } else if (entry.isIntersecting) {
       if (entry.target == masonrySection.value) {
         console.log('masonrySection animation')
