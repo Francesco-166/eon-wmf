@@ -57,6 +57,11 @@ const router = createRouter({
       name: 'patienten-uebersicht',
       component: () => import('../views/DRVPatientenUebersicht.vue'),
     },
+    {
+      path: '/dokumenten-analyse',
+      name: 'dokumenten-analyse',
+      component: () => import('../views/DRVDokumentenAnalyse.vue'),
+    },
   ],
 })
 

@@ -1,18 +1,5 @@
 <script setup lang="ts">
-// import { useHead } from '@unhead/vue'
 import { onMounted, ref } from 'vue'
-
-// const title = 'Kletterwald München – Anfahrt'
-// const myPage = ref({
-//   description:
-//     'Anfahrt zum Kletterwald München ✅ Mit öffentlichen ✅ Tram 26 oder S7 ✅ und mit dem PKW',
-// })
-// useHead({
-//   // ref (recommended)
-//   title,
-//   // computed getter (recommended)
-//   meta: [{ name: 'description', content: () => myPage.value.description }],
-// })
 
 let observerFiredFirstTime = false
 const iFrameSection = ref<Element>()
