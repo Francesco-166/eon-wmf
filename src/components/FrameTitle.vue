@@ -28,10 +28,10 @@
   align-items: flex-start;
   align-self: stretch;
 
-  color: #000;
+  /* color: #000; */
 
   /* Fixed heading styles/heading-compact-02 */
-  font-family: var(--Fixed-Heading-Font-family, "IBM Plex Sans");
+  font-family: var(--Fixed-Heading-Font-family, 'IBM Plex Sans');
   font-size: 16px;
   font-style: normal;
   font-weight: 600;
@@ -39,7 +39,7 @@
 
   /* height: 20px; */
 }
-/* 
+/*
 .internal {
   display: flex;
   flex-direction: column;
@@ -51,5 +51,4 @@
   height: 100%;
   padding: 0px;
 } */
-
 </style>

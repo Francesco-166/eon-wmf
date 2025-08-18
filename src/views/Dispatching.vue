@@ -27,6 +27,7 @@ import {
   Incomplete16 as IncompleteIcon,
   ArrowRight16 as ArrowRightIcon,
   InformationFilled16 as InformationFilledIcon,
+  AiLabel24 as AiLabelIcon,
   // Idea16 as IdeaIcon,
   // Login20 as LoginIcon,
   // UserAvatar20 as AvatarIcon,
@@ -38,6 +39,8 @@ import chartOptions from '@/assets/data/annualPlanningStackedBarChartOptions.ts'
 import resourcesData from '@/assets/data/annualPlanningInternalResources.ts'
 import providersData from '@/assets/data/annualPlanningExternalProviders.ts'
 
+import { useStorage } from '@vueuse/core'
+
 const router = useRouter()
 const data = ref(chartData)
 const options = ref(chartOptions)
@@ -45,6 +48,9 @@ const resources = ref(resourcesData)
 const providers = ref(providersData)
 // console.warn(resources.value)
 const selectPlanningModeModalVisible = ref(false)
+
+const theme = ref(useStorage('theme', 'g10'))
+options.value.theme = theme.value
 
 // const planningModeAI = ref(true);
 // const planningModeManual = ref(false);
@@ -940,7 +946,9 @@ const { md, carbonMd } = useBreakpoints()
               </cv-progress>
             </div>
             <div class="bottom">
-              <div class="guidance">
+              <div
+                class="guidance bx--inline-notification--low-contrast bx--inline-notification--info"
+              >
                 <p className="guidance-title">
                   Guidance to success:<InformationFilledIcon fill="#0f62fe" />
                 </p>
@@ -1071,7 +1079,8 @@ const { md, carbonMd } = useBreakpoints()
             class="w50 border1gray modal-header"
           >
             <span class="inline">
-              <div class="ai-label">AI</div>
+              <ai-label-icon />
+              <!-- <div class="ai-label">AI</div> -->
               &nbsp;Smart AI Auto-Assign
             </span>
             <br />
@@ -1216,7 +1225,7 @@ const { md, carbonMd } = useBreakpoints()
 }
 
 .title20 {
-  color: var(--Text-text-primary, #161616);
+  /* color: var(--Text-text-primary, #161616); */
 
   /* Fixed heading styles/heading-03 */
   font-family: var(--Fixed-Heading-Heading-03-Font-family, 'IBM Plex Sans');
@@ -1227,7 +1236,7 @@ const { md, carbonMd } = useBreakpoints()
 }
 
 .text14 {
-  color: var(--Text-text-primary, #161616);
+  /* color: var(--Text-text-primary, #161616); */
 
   /* Body styles/body-compact-01 */
   font-family: var(--Fixed-Body-Font-family, 'IBM Plex Sans');
@@ -1284,7 +1293,8 @@ const { md, carbonMd } = useBreakpoints()
   top: 3rem;
   bottom: 0;
   right: 0;
-  background: white;
+  /* background: white; */
+  background: var(--cds-ui-01);
 }
 
 .v-stretch {
@@ -1315,12 +1325,12 @@ const { md, carbonMd } = useBreakpoints()
   margin: 16px;
   padding: 16px;
   border-radius: 8px;
-  border: 1px solid var(--border-subtle-contextual, #e0e0e0);
-  background: var(--Notification-notification-info-background, #edf5ff);
+  /* border: 1px solid var(--border-subtle-contextual, #e0e0e0); */
+  /* background: var(--Notification-notification-info-background, #edf5ff); */
 }
 
 .guidance-title {
-  color: #000;
+  /* color: #000; */
   padding-bottom: 10px;
   display: flex;
   justify-content: space-between;
@@ -1337,7 +1347,7 @@ const { md, carbonMd } = useBreakpoints()
 }
 
 .guidance-content {
-  color: #000;
+  /* color: #000; */
 
   /* Utility styles/helper-text-01 */
   font-family: var(--fixed-utility-helper-text-0102-font-family, 'IBM Plex Sans');
@@ -1458,7 +1468,8 @@ ul li {
 
 .background_white {
   /* display: block; */
-  background: white;
+  /* background: white; */
+  background: var(--cds-ui-01);
   /* flex-direction: column; */
   /* height: auto; */
   /* align-self: stretch; */
@@ -1487,7 +1498,8 @@ ul li {
   gap: 16px;
   align-self: stretch;
 
-  background: white;
+  /* background: white; */
+  background: var(--cds-ui-01);
 }
 
 .chart-content {
@@ -1585,7 +1597,7 @@ ul li {
 }
 
 .qualification-header {
-  color: #000;
+  /* color: #000; */
 
   /* Fixed heading styles/heading-compact-01 */
   font-family: var(--Fixed-Heading-Font-family, 'IBM Plex Sans');
@@ -1597,7 +1609,7 @@ ul li {
 }
 
 .modal-header {
-  color: var(--Text-text-primary, #161616);
+  /* color: var(--Text-text-primary, #161616); */
 
   /* Fixed heading styles/heading-02 */
   font-family: var(--Fixed-Heading-Font-family, 'IBM Plex Sans');
@@ -1616,6 +1628,7 @@ ul li {
   align-items: center;
   flex-shrink: 0;
 
+  /* border: 1px solid var(--Border-border-inverse); */
   border: 1px solid var(--Border-border-inverse, #161616);
   background: var(--Transparent, rgba(255, 255, 255, 0));
   background-blend-mode: multiply;

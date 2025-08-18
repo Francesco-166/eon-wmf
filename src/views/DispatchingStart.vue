@@ -1,20 +1,17 @@
 <script setup>
-import { useRouter } from "vue-router";
-import { useFishStore } from "../stores/fish";
-import FishRow from "../components/FishRow.vue";
-import ResourceRow from "../components/ResourceRow.vue";
-import { computed, onMounted, ref, provide, watch } from "vue";
-import {
-  View20 as ShowAllIcon,
-  ViewOff20 as HideIcon,
-} from "@carbon/icons-vue";
-import { useTranslation } from "i18next-vue";
-import FishRowEmpty from "@/components/FishRowEmpty.vue";
-import { useLanguageStore } from "@/stores/language.js";
-import { useBreakpoints } from "@/composables/useBreakpoints.js";
-import MobileTablePagination from "@/components/MobileTablePagination.vue";
-import WidgetKPI from "../components/WidgetKPI.vue";
-import FrameTitle from "../components/FrameTitle.vue";
+import { useRouter } from 'vue-router'
+import { useFishStore } from '../stores/fish'
+import FishRow from '../components/FishRow.vue'
+import ResourceRow from '../components/ResourceRow.vue'
+import { computed, onMounted, ref, provide, watch } from 'vue'
+import { View20 as ShowAllIcon, ViewOff20 as HideIcon } from '@carbon/icons-vue'
+import { useTranslation } from 'i18next-vue'
+import FishRowEmpty from '@/components/FishRowEmpty.vue'
+import { useLanguageStore } from '@/stores/language.js'
+import { useBreakpoints } from '@/composables/useBreakpoints.js'
+import MobileTablePagination from '@/components/MobileTablePagination.vue'
+import WidgetKPI from '../components/WidgetKPI.vue'
+import FrameTitle from '../components/FrameTitle.vue'
 import {
   Parameter16 as ParameterIcon,
   Edit16 as EditIcon,
@@ -43,145 +40,151 @@ import {
   // UserAvatar20 as AvatarIcon,
   // Switcher20 as SwitcherIcon,
   // ColorPalette20 as ThemeIcon,
-} from "@carbon/icons-vue";
-import donutData0 from "@/assets/data/dispatchingStartDonutData.ts";
-import chartData from "@/assets/data/annualPlanningStartCapacityStackedBarChartData.ts";
-import donutOptions0 from "@/assets/data/annualPlanningStartDonutOptions.ts";
-import chartOptions from "@/assets/data/annualPlanningStartCapacityStackedBarChartOptions.ts";
-import resourcesData from "@/assets/data/annualPlanningInternalResources.ts";
-import providersData from "@/assets/data/annualPlanningExternalProviders.ts";
+} from '@carbon/icons-vue'
+import donutData0 from '@/assets/data/dispatchingStartDonutData.ts'
+import chartData from '@/assets/data/annualPlanningStartCapacityStackedBarChartData.ts'
+import donutOptions0 from '@/assets/data/annualPlanningStartDonutOptions.ts'
+import chartOptions from '@/assets/data/annualPlanningStartCapacityStackedBarChartOptions.ts'
+import resourcesData from '@/assets/data/annualPlanningInternalResources.ts'
+import providersData from '@/assets/data/annualPlanningExternalProviders.ts'
 
-const router = useRouter();
-const donutData = ref(donutData0);
-const data = ref(chartData);
-const donutOptions = ref(donutOptions0);
-const options = ref(chartOptions);
-const resources = ref(resourcesData);
-const providers = ref(providersData);
+import { useStorage } from '@vueuse/core'
+
+const router = useRouter()
+const donutData = ref(donutData0)
+const data = ref(chartData)
+const donutOptions = ref(donutOptions0)
+const options = ref(chartOptions)
+const resources = ref(resourcesData)
+const providers = ref(providersData)
 // console.warn(resources.value)
-const selectPlanningModeModalVisible = ref(false);
+const selectPlanningModeModalVisible = ref(false)
+
+const theme = ref(useStorage('theme', 'g10'))
+// console.log(options.value)
+donutOptions.value.theme = theme.value
+options.value.theme = theme.value
 
 // console.log(donutData);
 // console.log(donutOptions);
 
-const region = ref("mando");
+const region = ref('mando')
 
 const showNotification = ref(true)
 
 // const planningModeAI = ref(true);
 // const planningModeManual = ref(false);
 
-const { t, i18next } = useTranslation();
-const langStore = useLanguageStore();
+const { t, i18next } = useTranslation()
+const langStore = useLanguageStore()
 
-const hideIcon = HideIcon;
-const fishStore = useFishStore();
-const loading = ref(false);
-const pagination = ref({ numberOfItems: 0, pageSizes: [7, 11, 23, 31] });
+const hideIcon = HideIcon
+const fishStore = useFishStore()
+const loading = ref(false)
+const pagination = ref({ numberOfItems: 0, pageSizes: [7, 11, 23, 31] })
 const i18nPagination = computed(() => {
   return {
     ...pagination.value,
-    pageSizesLabel: t("items"),
-    backwardText: t("previous-page"),
-    forwardText: t("next-page"),
-    pageNumberLabel: t("page-number"),
-  };
-});
+    pageSizesLabel: t('items'),
+    backwardText: t('previous-page'),
+    forwardText: t('next-page'),
+    pageNumberLabel: t('page-number'),
+  }
+})
 onMounted(() => {
-  loading.value = true;
+  loading.value = true
   try {
     fishStore.loadFish().finally(() => {
-      pagination.value.numberOfItems = fishStore.fish.length;
-      loading.value = false;
-    });
+      pagination.value.numberOfItems = fishStore.fish.length
+      loading.value = false
+    })
   } catch (e) {
-    console.error("error loading fish from API", e.message);
+    console.error('error loading fish from API', e.message)
   }
-});
-const sortKeys = ref({ index: "0", order: "none", name: null });
+})
+const sortKeys = ref({ index: '0', order: 'none', name: null })
 function onSort(keys) {
-  sortKeys.value = keys;
+  sortKeys.value = keys
 }
 
-const searchFilter = ref("");
+const searchFilter = ref('')
 /**
  * Set a search filter
  * @param {string} val
  */
 function onSearch(val) {
-  searchFilter.value = val?.trim();
+  searchFilter.value = val?.trim()
 }
-const showHidden = ref(false);
+const showHidden = ref(false)
 const filteredFish = computed(() => {
   // start with all the fish
   /** @type {Array<FishData>} */
-  let show = fishStore.fish;
+  let show = fishStore.fish
 
   // if we are not showing hidden fish, remove them
-  if (!showHidden.value) show = show.filter((fish) => !fish.hidden);
+  if (!showHidden.value) show = show.filter((fish) => !fish.hidden)
 
   // if we have search term, filter based on that term
-  if (searchFilter.value)
-    show = show.filter((fish) => fish.key.includes(searchFilter.value));
+  if (searchFilter.value) show = show.filter((fish) => fish.key.includes(searchFilter.value))
 
   // If we are sorting the data, do that here
-  if (sortKeys.value.order !== "none") {
+  if (sortKeys.value.order !== 'none') {
     show.sort((a, b) => {
-      const _a = a[sortKeys.value.name]; // fish name or price
-      const _b = b[sortKeys.value.name]; // fish name or price
-      let cmp = 0;
+      const _a = a[sortKeys.value.name] // fish name or price
+      const _b = b[sortKeys.value.name] // fish name or price
+      let cmp = 0
       // sort by price (or some other number value that may get added later)
-      if (typeof _a === "number") {
-        cmp = _a - _b;
+      if (typeof _a === 'number') {
+        cmp = _a - _b
       }
       // or sort by name
-      else if (sortKeys.value.name === "name") {
-        const key = "name-" + langStore.languageObject.api;
-        const nameA = _a[key] || "";
-        const nameB = _b[key] || "";
-        cmp = nameA.localeCompare(nameB, i18next.language);
+      else if (sortKeys.value.name === 'name') {
+        const key = 'name-' + langStore.languageObject.api
+        const nameA = _a[key] || ''
+        const nameB = _b[key] || ''
+        cmp = nameA.localeCompare(nameB, i18next.language)
       }
       // reverse the sort
-      if (sortKeys.value.order === "descending") cmp = -cmp;
-      return cmp;
-    });
+      if (sortKeys.value.order === 'descending') cmp = -cmp
+      return cmp
+    })
   }
-  return show;
-});
+  return show
+})
 watch(filteredFish, () => {
-  pagination.value.numberOfItems = filteredFish.value.length;
-});
+  pagination.value.numberOfItems = filteredFish.value.length
+})
 
 function hideNotification() {
-  console.warn("hideNotification");
+  console.warn('hideNotification')
   // selectPlanningModeModalVisible.value = true;
-  showNotification.value = false;
+  showNotification.value = false
 }
 
 function gotoDispatching() {
-  console.warn("gotoDispatching");
+  console.warn('gotoDispatching')
   // selectPlanningModeModalVisible.value = true;
-  router.push("Dispatching");
+  router.push('Dispatching')
 }
 
-const planningModeAI = ref(true);
+const planningModeAI = ref(true)
 // planningModeAI.value = computed(() => {
 //   console.warn("AI....");
 //   return !planningModeManual.value;
 // });
 
 const planningModeManual = computed(() => {
-  return !planningModeAI.value;
-});
+  return !planningModeAI.value
+})
 
 // watch(planningModeAI, () => {
 //   console.warn("AI");
 //   //   planningModeManual.value = false;
 // });
 watch(planningModeManual, () => {
-  console.warn("manual");
-  planningModeAI.value = !planningModeManual.value;
-});
+  console.warn('manual')
+  planningModeAI.value = !planningModeManual.value
+})
 
 // function planningModeAISelected() {
 //   console.warn("AI");
@@ -195,38 +198,35 @@ watch(planningModeManual, () => {
 // }
 
 function onPrimaryClick() {
-  console.warn("primary");
-  router.push("ScenarioPlanning");
+  console.warn('primary')
+  router.push('ScenarioPlanning')
 }
 
 function toggleShowAll() {
-  showHidden.value = !showHidden.value;
+  showHidden.value = !showHidden.value
 }
 
-const currentPagination = ref({ start: 1, length: 7 });
+const currentPagination = ref({ start: 1, length: 7 })
 const paginated = computed(() => {
-  const change = currentPagination.value;
-  return filteredFish.value.slice(
-    change.start - 1,
-    change.start + change.length - 1
-  );
-});
+  const change = currentPagination.value
+  return filteredFish.value.slice(change.start - 1, change.start + change.length - 1)
+})
 function onPagination(change) {
-  currentPagination.value = change;
+  currentPagination.value = change
 }
-const selectedFish = ref([]);
+const selectedFish = ref([])
 function onHideSelected() {
   for (let i = 0; i < selectedFish.value.length; i++) {
-    const key = selectedFish.value[i];
-    fishStore.hideFish(key);
+    const key = selectedFish.value[i]
+    fishStore.hideFish(key)
   }
-  selectedFish.value = [];
+  selectedFish.value = []
 }
 
-const showCatchPhrases = ref(false);
-provide("show-catch-phrases", showCatchPhrases);
+const showCatchPhrases = ref(false)
+provide('show-catch-phrases', showCatchPhrases)
 
-const { md, carbonMd } = useBreakpoints();
+const { md, carbonMd } = useBreakpoints()
 </script>
 
 <template>
@@ -240,23 +240,16 @@ const { md, carbonMd } = useBreakpoints();
               <div class="title-frame">
                 <div class="title">Dashboard</div>
                 <div class="subtitle">
-                  Overview of the current status for Planning and Work Order
-                  Management
+                  Overview of the current status for Planning and Work Order Management
                 </div>
               </div>
               <div>
                 <div>Region</div>
                 <br />
                 <cv-dropdown v-model="region" class="w250px">
-                  <cv-dropdown-item value="mando"
-                    >Netzbereich Dorsten-Marl 1</cv-dropdown-item
-                  >
-                  <cv-dropdown-item value="nite-owl"
-                    >Netzbereich Dorsten-Marl 2</cv-dropdown-item
-                  >
-                  <cv-dropdown-item value="mysterious"
-                    >Netzbereich Dorsten-Marl 3</cv-dropdown-item
-                  >
+                  <cv-dropdown-item value="mando">Netzbereich Dorsten-Marl 1</cv-dropdown-item>
+                  <cv-dropdown-item value="nite-owl">Netzbereich Dorsten-Marl 2</cv-dropdown-item>
+                  <cv-dropdown-item value="mysterious">Netzbereich Dorsten-Marl 3</cv-dropdown-item>
                   <cv-dropdown-item value="bounty-hunter"
                     >Netzbereich Dorsten-Marl 4</cv-dropdown-item
                   >
@@ -265,7 +258,7 @@ const { md, carbonMd } = useBreakpoints();
             </span>
           </div>
           <div class="widget-wrap">
-            <WidgetKPI classes="border-left border-red">
+            <WidgetKPI class="bx--inline-notification--low-contrast bx--inline-notification--error">
               <template #title>
                 <warning-alt-inverted-icon fill="red" />
                 Overdue Work Orders
@@ -276,37 +269,31 @@ const { md, carbonMd } = useBreakpoints();
                 <br />
                 <cv-tag kind="red" label="Requires action"></cv-tag>
               </template>
-              <template #bottomline>
-                Reschedule now<ArrowRightIcon />
-              </template>
+              <template #bottomline> Reschedule now<ArrowRightIcon /> </template>
             </WidgetKPI>
-            <WidgetKPI @click="gotoDispatching()"
+            <WidgetKPI
+              class="bx--inline-notification--low-contrast bx--inline-notification--info"
+              @click="gotoDispatching()"
               ><template #title
-                ><information-square-filled-icon fill="blue" />Dispatch
-                upcoming month</template
+                ><information-square-filled-icon fill="blue" />Dispatch upcoming month</template
               ><template #primary>130</template>
               <template #body> work orders ready for dispatching </template>
-              <template #bottomline
-                >Dispatch upcoming month<Arrow-right-icon /></template
+              <template #bottomline>Dispatch upcoming month<Arrow-right-icon /></template
             ></WidgetKPI>
-            <WidgetKPI
+            <WidgetKPI class="bx--inline-notification--low-contrast bx--inline-notification--info" s
               ><template #title
-                ><information-square-filled-icon fill="blue"/>Total work order ready for
+                ><information-square-filled-icon fill="blue" />Total work order ready for
                 dispatching</template
               ><template #primary>1747</template
-              ><template #body
-                >total work orders ready for dispatching<br /> </template
-              ><template #bottomline
-                >Dispatch work orders<Arrow-right-icon /></template
+              ><template #body>total work orders ready for dispatching<br /> </template
+              ><template #bottomline>Dispatch work orders<Arrow-right-icon /></template
             ></WidgetKPI>
           </div>
           <div class="frame0">
             <div class="frame1">
               <div class="frame-content background_white">
                 <div class="title0">
-                  <div class="inline">
-                    <information-icon />&nbsp;Total work order distribution
-                  </div>
+                  <div class="inline"><information-icon />&nbsp;Total work order distribution</div>
                 </div>
                 <cv-content-switcher
                   id="workOrders"
@@ -343,8 +330,7 @@ const { md, carbonMd } = useBreakpoints();
               <div class="frame-content background_white">
                 <div class="title0">
                   <div class="inline">
-                    <in-progress-icon />&nbsp;Actual utilisation: Required vs.
-                    Available Capacity
+                    <in-progress-icon />&nbsp;Actual utilisation: Required vs. Available Capacity
                   </div>
                 </div>
                 <cv-content-switcher
@@ -352,27 +338,19 @@ const { md, carbonMd } = useBreakpoints();
                   aria-label="Choose content"
                   @selected="onSelected"
                 >
-                  <cv-content-switcher-button
-                    parent-switcher="timeFrame"
-                    :selected="true"
+                  <cv-content-switcher-button parent-switcher="timeFrame" :selected="true"
                     >Next 7 days</cv-content-switcher-button
                   >
-                  <cv-content-switcher-button
-                    parent-switcher="timeFrame"
-                    :selected="false"
+                  <cv-content-switcher-button parent-switcher="timeFrame" :selected="false"
                     >Next 30 days</cv-content-switcher-button
                   >
-                  <cv-content-switcher-button
-                    parent-switcher="timeFrame"
-                    :selected="false"
-                  >
+                  <cv-content-switcher-button parent-switcher="timeFrame" :selected="false">
                     This year
                   </cv-content-switcher-button>
                 </cv-content-switcher>
                 <br />
                 <div class="title">&lt;20%</div>
-                Utilisation in upcoming week, dispatch upcoming tasks to your
-                technicians
+                Utilisation in upcoming week, dispatch upcoming tasks to your technicians
                 <br />
                 <br />
                 <br />
@@ -396,74 +374,74 @@ const { md, carbonMd } = useBreakpoints();
               <div>
                 <br />
                 <br />
-                <WidgetKPI class="blue" @click="gotoDispatching()">
+                <WidgetKPI
+                  class="bx--inline-notification--low-contrast bx--inline-notification--info"
+                  @click="gotoDispatching()"
+                >
                   <template #title>
                     <div class="h-spread">
                       <div class="inline">
-                        <undefined-filled-icon fill="purple"/>
+                        <undefined-filled-icon fill="purple" />
                         &nbsp;
-                        <div class="text14 bold inline">
-                          Dipatch upcoming month
-                        </div>
+                        <div class="text14 bold inline">Dipatch upcoming month</div>
                       </div>
-                      <div class="inline">
-                        01.01.26 <overflow-menu-vertical-icon />
-                      </div>
+                      <div class="inline">01.01.26 <overflow-menu-vertical-icon /></div>
                     </div>
                   </template>
                   <template #body>
-                    130 work orders (300 Operations) planned and ready<br />for
-                    dispatching.
+                    130 work orders (300 Operations) planned and ready<br />for dispatching.
                   </template>
                 </WidgetKPI>
                 <br />
                 <br />
-                <WidgetKPI class="red">
+                <WidgetKPI
+                  class="bx--inline-notification--low-contrast bx--inline-notification--error"
+                >
                   <template #title>
                     <div class="h-spread">
                       <div class="inline">
                         <error-filled-icon fill="red"></error-filled-icon>
                         &nbsp;
-                        <div class="text14 bold inline">
-                          WO overdue: Attention required
-                        </div>
+                        <div class="text14 bold inline">WO overdue: Attention required</div>
                       </div>
-                      <div class="inline">
-                        01.01.26 <overflow-menu-vertical-icon />
-                      </div>
+                      <div class="inline">01.01.26 <overflow-menu-vertical-icon /></div>
                     </div>
                   </template>
-                  <template #body>
-                    6 work orders overdue & need to be rescheduled
-                  </template>
+                  <template #body> 6 work orders overdue & need to be rescheduled </template>
                 </WidgetKPI>
                 <br />
                 <br />
-                <WidgetKPI class="yellow">
+                <WidgetKPI
+                  class="bx--inline-notification--low-contrast bx--inline-notification--warning"
+                >
                   <template #title>
                     <div class="h-spread">
                       <div class="inline">
                         <error-filled-icon fill="red"></error-filled-icon>
                         &nbsp;
-                        <div class="text14 bold inline">
-                          Utilisation low: Attention required
-                        </div>
+                        <div class="text14 bold inline">Utilisation low: Attention required</div>
                       </div>
-                      <div class="inline">
-                        01.01.26 <overflow-menu-vertical-icon />
-                      </div>
+                      <div class="inline">01.01.26 <overflow-menu-vertical-icon /></div>
                     </div>
                   </template>
                   <template #body>
-                    &lt;15% total utilisation in upcoming month, complete<br />annual
-                    plan and dispatch upcoming task to your technicians
+                    &lt;15% total utilisation in upcoming month, complete<br />annual plan and
+                    dispatch upcoming task to your technicians
                   </template>
                 </WidgetKPI>
               </div>
-              <div v-if="showNotification" class="popup green border-left border-green" @click="hideNotification()">
-                  <div class="popup-left"><checkmark-filled-icon fill="green" /></div>
-                  <div class="popup-middle"><div class="bold">Success: Annual Planning copmpleted</div>You have successfully planned 1647 Work Orders for the current year 2026.<br /><br /><br />01.01.2026 - 08:30 Uhr</div>
-                  <div class="popup-right"><close-icon/></div>
+              <div
+                v-if="showNotification"
+                class="popup green border-left border-green"
+                @click="hideNotification()"
+              >
+                <div class="popup-left"><checkmark-filled-icon fill="green" /></div>
+                <div class="popup-middle">
+                  <div class="bold">Success: Annual Planning copmpleted</div>
+                  You have successfully planned 1647 Work Orders for the current year 2026.<br /><br /><br />01.01.2026
+                  - 08:30 Uhr
+                </div>
+                <div class="popup-right"><close-icon /></div>
               </div>
             </div>
             <!-- <div class="popup success">Success</div> -->
@@ -509,7 +487,7 @@ const { md, carbonMd } = useBreakpoints();
   /* color: #000; */
 
   /* Productive/heading-04 */
-  font-family: "IBM Plex Sans";
+  font-family: 'IBM Plex Sans';
   font-size: 28px;
   font-style: normal;
   font-weight: 400;
@@ -557,10 +535,10 @@ const { md, carbonMd } = useBreakpoints();
 }
 
 .title20 {
-  color: var(--Text-text-primary, #161616);
+  /* color: var(--Text-text-primary); */
 
   /* Fixed heading styles/heading-03 */
-  font-family: var(--Fixed-Heading-Heading-03-Font-family, "IBM Plex Sans");
+  font-family: var(--Fixed-Heading-Heading-03-Font-family, 'IBM Plex Sans');
   font-size: 20px;
   font-style: normal;
   font-weight: 400;
@@ -568,10 +546,10 @@ const { md, carbonMd } = useBreakpoints();
 }
 
 .text14 {
-  color: var(--Text-text-primary, #161616);
+  /* color: var(--Text-text-primary); */
 
   /* Body styles/body-compact-01 */
-  font-family: var(--Fixed-Body-Font-family, "IBM Plex Sans");
+  font-family: var(--Fixed-Body-Font-family, 'IBM Plex Sans');
   font-size: 14px;
   font-style: normal;
   font-weight: 400;
@@ -594,7 +572,7 @@ const { md, carbonMd } = useBreakpoints();
   /* color: #000; */
 
   /* Body styles/body-01 */
-  font-family: var(--Fixed-Body-Font-family, "IBM Plex Sans");
+  font-family: var(--Fixed-Body-Font-family, 'IBM Plex Sans');
   font-size: 14px;
   font-style: normal;
   font-weight: 400;
@@ -636,7 +614,8 @@ const { md, carbonMd } = useBreakpoints();
   top: 3rem;
   bottom: 0;
   right: 0;
-  background: white;
+  background: var(--cds-ui-01);
+  /* background: white; */
 }
 
 .v-stretch {
@@ -680,7 +659,7 @@ const { md, carbonMd } = useBreakpoints();
   align-self: stretch;
 
   /* Fixed heading styles/heading-compact-01 */
-  font-family: var(--Fixed-Heading-Font-family, "IBM Plex Sans");
+  font-family: var(--Fixed-Heading-Font-family, 'IBM Plex Sans');
   font-size: 14px;
   font-style: normal;
   font-weight: 600;
@@ -692,10 +671,7 @@ const { md, carbonMd } = useBreakpoints();
   color: #000;
 
   /* Utility styles/helper-text-01 */
-  font-family: var(
-    --fixed-utility-helper-text-0102-font-family,
-    "IBM Plex Sans"
-  );
+  font-family: var(--fixed-utility-helper-text-0102-font-family, 'IBM Plex Sans');
   font-size: 12px;
   font-style: normal;
   font-weight: 400;
@@ -814,7 +790,8 @@ ul li {
 
 .background_white {
   /* display: block; */
-  background: white;
+  background: var(--cds-ui-01);
+  /* background: white; */
   /* flex-direction: column; */
   /* height: auto; */
   /* align-self: stretch; */
@@ -822,7 +799,7 @@ ul li {
 }
 
 .map {
-  background: url("@/assets/map.png") lightgray 35% / cover no-repeat;
+  background: url('@/assets/map.png') lightgray 35% / cover no-repeat;
   width: 100%;
   height: 550px;
   /* height: auto; */
@@ -843,7 +820,8 @@ ul li {
   gap: 16px;
   align-self: stretch;
 
-  background: white;
+  background: var(--cds-ui-01);
+  /* background: white; */
 }
 
 .chart-content {
@@ -961,7 +939,7 @@ ul li {
   color: #000;
 
   /* Fixed heading styles/heading-compact-01 */
-  font-family: var(--Fixed-Heading-Font-family, "IBM Plex Sans");
+  font-family: var(--Fixed-Heading-Font-family, 'IBM Plex Sans');
   font-size: 14px;
   font-style: normal;
   font-weight: 600;
@@ -973,7 +951,7 @@ ul li {
   color: var(--Text-text-primary, #161616);
 
   /* Fixed heading styles/heading-02 */
-  font-family: var(--Fixed-Heading-Font-family, "IBM Plex Sans");
+  font-family: var(--Fixed-Heading-Font-family, 'IBM Plex Sans');
   font-size: 16px;
   font-style: normal;
   font-weight: 600;

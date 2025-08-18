@@ -1,20 +1,17 @@
 <script setup>
-import { useRouter } from "vue-router";
-import { useFishStore } from "../stores/fish";
-import FishRow from "../components/FishRow.vue";
-import ResourceRow from "../components/ResourceRow.vue";
-import { computed, onMounted, ref, provide, watch } from "vue";
-import {
-  View20 as ShowAllIcon,
-  ViewOff20 as HideIcon,
-} from "@carbon/icons-vue";
-import { useTranslation } from "i18next-vue";
-import FishRowEmpty from "@/components/FishRowEmpty.vue";
-import { useLanguageStore } from "@/stores/language.js";
-import { useBreakpoints } from "@/composables/useBreakpoints.js";
-import MobileTablePagination from "@/components/MobileTablePagination.vue";
-import WidgetKPI from "../components/WidgetKPI.vue";
-import FrameTitle from "../components/FrameTitle.vue";
+import { useRouter } from 'vue-router'
+import { useFishStore } from '../stores/fish'
+import FishRow from '../components/FishRow.vue'
+import ResourceRow from '../components/ResourceRow.vue'
+import { computed, onMounted, ref, provide, watch } from 'vue'
+import { View20 as ShowAllIcon, ViewOff20 as HideIcon } from '@carbon/icons-vue'
+import { useTranslation } from 'i18next-vue'
+import FishRowEmpty from '@/components/FishRowEmpty.vue'
+import { useLanguageStore } from '@/stores/language.js'
+import { useBreakpoints } from '@/composables/useBreakpoints.js'
+import MobileTablePagination from '@/components/MobileTablePagination.vue'
+import WidgetKPI from '../components/WidgetKPI.vue'
+import FrameTitle from '../components/FrameTitle.vue'
 import {
   Parameter16 as ParameterIcon,
   Edit16 as EditIcon,
@@ -31,129 +28,128 @@ import {
   ArrowRight16 as ArrowRightIcon,
   InformationFilled16 as InformationFilledIcon,
   Settings16 as SettingsIcon,
-  Ai16 as AiIcon,
+  AiLabel24 as AiLabelIcon,
   // Login20 as LoginIcon,
   // UserAvatar20 as AvatarIcon,
   // Switcher20 as SwitcherIcon,
   // ColorPalette20 as ThemeIcon,
-} from "@carbon/icons-vue";
-import calendarData0 from "@/assets/data/annualPlanningCapacityCalendarData.ts";
-import chartData from "@/assets/data/annualPlanningCapacityStackedBarChartData.ts";
-import chartOptions from "@/assets/data/annualPlanningCapacityStackedBarChartOptions.ts";
-import resourcesData from "@/assets/data/annualPlanningInternalResources.ts";
-import providersData from "@/assets/data/annualPlanningExternalProviders.ts";
+} from '@carbon/icons-vue'
+import calendarData0 from '@/assets/data/annualPlanningCapacityCalendarData.ts'
+import chartData from '@/assets/data/annualPlanningCapacityStackedBarChartData.ts'
+import chartOptions from '@/assets/data/annualPlanningCapacityStackedBarChartOptions.ts'
+import resourcesData from '@/assets/data/annualPlanningInternalResources.ts'
+import providersData from '@/assets/data/annualPlanningExternalProviders.ts'
 
-const router = useRouter();
+const router = useRouter()
 
-const calendarData = ref(calendarData0);
-const data = ref(chartData);
-const options = ref(chartOptions);
-const resources = ref(resourcesData);
-const providers = ref(providersData);
+const calendarData = ref(calendarData0)
+const data = ref(chartData)
+const options = ref(chartOptions)
+const resources = ref(resourcesData)
+const providers = ref(providersData)
 // console.warn(resources.value)
 
 // const planningModeAI = ref(true);
 // const planningModeManual = ref(false);
 
-const { t, i18next } = useTranslation();
-const langStore = useLanguageStore();
+const { t, i18next } = useTranslation()
+const langStore = useLanguageStore()
 
-const hideIcon = HideIcon;
-const fishStore = useFishStore();
-const loading = ref(false);
-const pagination = ref({ numberOfItems: 0, pageSizes: [7, 11, 23, 31] });
+const hideIcon = HideIcon
+const fishStore = useFishStore()
+const loading = ref(false)
+const pagination = ref({ numberOfItems: 0, pageSizes: [7, 11, 23, 31] })
 const i18nPagination = computed(() => {
   return {
     ...pagination.value,
-    pageSizesLabel: t("items"),
-    backwardText: t("previous-page"),
-    forwardText: t("next-page"),
-    pageNumberLabel: t("page-number"),
-  };
-});
+    pageSizesLabel: t('items'),
+    backwardText: t('previous-page'),
+    forwardText: t('next-page'),
+    pageNumberLabel: t('page-number'),
+  }
+})
 onMounted(() => {
-  loading.value = true;
+  loading.value = true
   try {
     fishStore.loadFish().finally(() => {
-      pagination.value.numberOfItems = fishStore.fish.length;
-      loading.value = false;
-    });
+      pagination.value.numberOfItems = fishStore.fish.length
+      loading.value = false
+    })
   } catch (e) {
-    console.error("error loading fish from API", e.message);
+    console.error('error loading fish from API', e.message)
   }
-});
-const sortKeys = ref({ index: "0", order: "none", name: null });
+})
+const sortKeys = ref({ index: '0', order: 'none', name: null })
 function onSort(keys) {
-  sortKeys.value = keys;
+  sortKeys.value = keys
 }
 
-const searchFilter = ref("");
+const searchFilter = ref('')
 /**
  * Set a search filter
  * @param {string} val
  */
 function onSearch(val) {
-  searchFilter.value = val?.trim();
+  searchFilter.value = val?.trim()
 }
-const showHidden = ref(false);
+const showHidden = ref(false)
 const filteredFish = computed(() => {
   // start with all the fish
   /** @type {Array<FishData>} */
-  let show = fishStore.fish;
+  let show = fishStore.fish
 
   // if we are not showing hidden fish, remove them
-  if (!showHidden.value) show = show.filter((fish) => !fish.hidden);
+  if (!showHidden.value) show = show.filter((fish) => !fish.hidden)
 
   // if we have search term, filter based on that term
-  if (searchFilter.value)
-    show = show.filter((fish) => fish.key.includes(searchFilter.value));
+  if (searchFilter.value) show = show.filter((fish) => fish.key.includes(searchFilter.value))
 
   // If we are sorting the data, do that here
-  if (sortKeys.value.order !== "none") {
+  if (sortKeys.value.order !== 'none') {
     show.sort((a, b) => {
-      const _a = a[sortKeys.value.name]; // fish name or price
-      const _b = b[sortKeys.value.name]; // fish name or price
-      let cmp = 0;
+      const _a = a[sortKeys.value.name] // fish name or price
+      const _b = b[sortKeys.value.name] // fish name or price
+      let cmp = 0
       // sort by price (or some other number value that may get added later)
-      if (typeof _a === "number") {
-        cmp = _a - _b;
+      if (typeof _a === 'number') {
+        cmp = _a - _b
       }
       // or sort by name
-      else if (sortKeys.value.name === "name") {
-        const key = "name-" + langStore.languageObject.api;
-        const nameA = _a[key] || "";
-        const nameB = _b[key] || "";
-        cmp = nameA.localeCompare(nameB, i18next.language);
+      else if (sortKeys.value.name === 'name') {
+        const key = 'name-' + langStore.languageObject.api
+        const nameA = _a[key] || ''
+        const nameB = _b[key] || ''
+        cmp = nameA.localeCompare(nameB, i18next.language)
       }
       // reverse the sort
-      if (sortKeys.value.order === "descending") cmp = -cmp;
-      return cmp;
-    });
+      if (sortKeys.value.order === 'descending') cmp = -cmp
+      return cmp
+    })
   }
-  return show;
-});
+  return show
+})
 watch(filteredFish, () => {
-  pagination.value.numberOfItems = filteredFish.value.length;
-});
+  pagination.value.numberOfItems = filteredFish.value.length
+})
 
-const planningModeAI = ref(true);
+const planningModeAI = ref(true)
 // planningModeAI.value = computed(() => {
 //   console.warn("AI....");
 //   return !planningModeManual.value;
 // });
 
 const planningModeManual = computed(() => {
-  return !planningModeAI.value;
-});
+  return !planningModeAI.value
+})
 
 // watch(planningModeAI, () => {
 //   console.warn("AI");
 //   //   planningModeManual.value = false;
 // });
 watch(planningModeManual, () => {
-  console.warn("manual");
-  planningModeAI.value = !planningModeManual.value;
-});
+  console.warn('manual')
+  planningModeAI.value = !planningModeManual.value
+})
 
 // function planningModeAISelected() {
 //   console.warn("AI");
@@ -167,38 +163,35 @@ watch(planningModeManual, () => {
 // }
 
 function saveSelectedPlan() {
-  console.warn("saveSelectedPlan");
-  router.push("DispatchingStart");
+  console.warn('saveSelectedPlan')
+  router.push('DispatchingStart')
 }
 
 function toggleShowAll() {
-  showHidden.value = !showHidden.value;
+  showHidden.value = !showHidden.value
 }
 
-const currentPagination = ref({ start: 1, length: 7 });
+const currentPagination = ref({ start: 1, length: 7 })
 const paginated = computed(() => {
-  const change = currentPagination.value;
-  return filteredFish.value.slice(
-    change.start - 1,
-    change.start + change.length - 1
-  );
-});
+  const change = currentPagination.value
+  return filteredFish.value.slice(change.start - 1, change.start + change.length - 1)
+})
 function onPagination(change) {
-  currentPagination.value = change;
+  currentPagination.value = change
 }
-const selectedFish = ref([]);
+const selectedFish = ref([])
 function onHideSelected() {
   for (let i = 0; i < selectedFish.value.length; i++) {
-    const key = selectedFish.value[i];
-    fishStore.hideFish(key);
+    const key = selectedFish.value[i]
+    fishStore.hideFish(key)
   }
-  selectedFish.value = [];
+  selectedFish.value = []
 }
 
-const showCatchPhrases = ref(false);
-provide("show-catch-phrases", showCatchPhrases);
+const showCatchPhrases = ref(false)
+provide('show-catch-phrases', showCatchPhrases)
 
-const { md, carbonMd } = useBreakpoints();
+const { md, carbonMd } = useBreakpoints()
 </script>
 
 <template>
@@ -210,9 +203,7 @@ const { md, carbonMd } = useBreakpoints();
           <div class="title-area">
             <div class="title-frame">
               <div class="title">New plan - Create Plan</div>
-              <div class="subtitle">
-                Review, adjust, and confirm your planning setup
-              </div>
+              <div class="subtitle">Review, adjust, and confirm your planning setup</div>
             </div>
           </div>
           <div class="frame0">
@@ -228,8 +219,8 @@ const { md, carbonMd } = useBreakpoints();
                       </div>
                     </template>
                     <template #rightSide>
-                      <!-- <ai-icon/> -->
-                      <div class="ai-label">AI</div>
+                      <ai-label-icon />
+                      <!-- <div class="ai-label">AI</div> -->
                       <!-- <cv-button
                       class="button_ghost"
                       :icon="NewTabIcon"
@@ -243,8 +234,7 @@ const { md, carbonMd } = useBreakpoints();
                     <template #title>Panning parameters</template>
                     <template #subtitle
                       ><div class="subtitle">
-                        Currently selected:<br />Resource Allocation, Max.UTI
-                        80%, Optimise Routes
+                        Currently selected:<br />Resource Allocation, Max.UTI 80%, Optimise Routes
                       </div></template
                     >
                     <template #rightSide>
@@ -255,9 +245,7 @@ const { md, carbonMd } = useBreakpoints();
                     <template #title
                       ><cv-toggle checked hideLabel
                         ><template v-slot:text-left>Use AI Predictions</template
-                        ><template v-slot:text-right
-                          >Use AI Predictions</template
-                        ></cv-toggle
+                        ><template v-slot:text-right>Use AI Predictions</template></cv-toggle
                       ></template
                     >
                     <template #rightSide>
@@ -267,11 +255,8 @@ const { md, carbonMd } = useBreakpoints();
                   <FrameTitle class="toggle">
                     <template #title
                       ><cv-toggle hideLabel
-                        ><template v-slot:text-left
-                          >Include ext. capacity</template
-                        ><template v-slot:text-right
-                          >Include ext. capacity</template
-                        ></cv-toggle
+                        ><template v-slot:text-left>Include ext. capacity</template
+                        ><template v-slot:text-right>Include ext. capacity</template></cv-toggle
                       ></template
                     >
                     <template #rightSide>
@@ -281,11 +266,11 @@ const { md, carbonMd } = useBreakpoints();
                   <FrameTitle>
                     <template #title>Create est. time blockers</template>
                     <template #subtitle
-                      >The AI Tag shows the recommended level<br />based on past
-                      data.</template
+                      >The AI Tag shows the recommended level<br />based on past data.</template
                     >
                     <template #rightSide>
-                      <div class="ai-label">AI</div>
+                      <ai-label-icon />
+                      <!-- <div class="ai-label">AI</div> -->
                     </template>
                   </FrameTitle>
                   <span class="slider inline">
@@ -296,9 +281,7 @@ const { md, carbonMd } = useBreakpoints();
                       maxLabel="30"
                       value="17"
                     ></cv-slider
-                    ><cv-button kind="ghost" :icon="SettingsIcon">
-                      edit
-                    </cv-button>
+                    ><cv-button kind="ghost" :icon="SettingsIcon"> edit </cv-button>
                   </span>
                   <span class="slider inline">
                     <cv-slider
@@ -308,9 +291,7 @@ const { md, carbonMd } = useBreakpoints();
                       maxLabel="70"
                       value="10"
                     ></cv-slider
-                    ><cv-button kind="ghost" :icon="SettingsIcon">
-                      edit
-                    </cv-button>
+                    ><cv-button kind="ghost" :icon="SettingsIcon"> edit </cv-button>
                   </span>
                   <span class="slider inline">
                     <cv-slider
@@ -320,9 +301,7 @@ const { md, carbonMd } = useBreakpoints();
                       maxLabel="300"
                       value="160"
                     ></cv-slider
-                    ><cv-button kind="ghost" :icon="SettingsIcon">
-                      edit
-                    </cv-button>
+                    ><cv-button kind="ghost" :icon="SettingsIcon"> edit </cv-button>
                   </span>
                 </div>
                 <div class="frame-right-panel">
@@ -468,9 +447,7 @@ const { md, carbonMd } = useBreakpoints();
                           width="13"
                           height="13"
                         ></div>
-                        <p id="chart-168b558baf544-legend-datagroup-0-title">
-                          Low <70%
-                        </p>
+                        <p id="chart-168b558baf544-legend-datagroup-0-title">Low <70%</p>
                       </div>
                       <div class="legend-item active">
                         <div
@@ -497,9 +474,7 @@ const { md, carbonMd } = useBreakpoints();
                             ></path>
                           </svg>
                         </div>
-                        <p id="chart-168b558baf544-legend-datagroup-1-title">
-                          Medium <=80%
-                        </p>
+                        <p id="chart-168b558baf544-legend-datagroup-1-title">Medium <=80%</p>
                       </div>
                       <div class="legend-item active">
                         <div
@@ -526,9 +501,7 @@ const { md, carbonMd } = useBreakpoints();
                             ></path>
                           </svg>
                         </div>
-                        <p id="chart-168b558baf544-legend-datagroup-2-title">
-                          High >80%
-                        </p>
+                        <p id="chart-168b558baf544-legend-datagroup-2-title">High >80%</p>
                       </div>
                       <div class="legend-item active">
                         <div
@@ -555,9 +528,7 @@ const { md, carbonMd } = useBreakpoints();
                             ></path>
                           </svg>
                         </div>
-                        <p id="chart-168b558baf544-legend-datagroup-3-title">
-                          Critical >90%
-                        </p>
+                        <p id="chart-168b558baf544-legend-datagroup-3-title">Critical >90%</p>
                       </div>
                     </div>
                   </div>
@@ -583,12 +554,8 @@ const { md, carbonMd } = useBreakpoints();
                 <CcvStackedBarChart class="barChart" :data :options />
               </div> -->
               <div class="footer-wrapper">
-                <cv-button kind="secondary" class="w50 bottom0"
-                  >Save as template</cv-button
-                >
-                <cv-button :icon="CheckmarkIcon" class="w50 bottom0"
-                  >Selected</cv-button
-                >
+                <cv-button kind="secondary" class="w50 bottom0">Save as template</cv-button>
+                <cv-button :icon="CheckmarkIcon" class="w50 bottom0">Selected</cv-button>
                 <!-- </span> -->
               </div>
               <!-- <div class="frame-content background_white"></div> -->
@@ -613,11 +580,7 @@ const { md, carbonMd } = useBreakpoints();
               <!-- MAIN
             <div>hoho</div>
             <div>hoho</div> -->
-              <cv-progress
-                :initial-step="2"
-                vertical="vertical"
-                :space-equally="spaceEqually"
-              >
+              <cv-progress :initial-step="2" vertical="vertical" :space-equally="spaceEqually">
                 <cv-progress-step
                   :complete="true"
                   id="step-1"
@@ -642,19 +605,19 @@ const { md, carbonMd } = useBreakpoints();
               </cv-progress>
             </div>
             <div class="bottom">
-              <div class="guidance">
+              <div
+                class="guidance bx--inline-notification--low-contrast bx--inline-notification--info"
+              >
                 <p className="guidance-title">
                   Guidance to success:<InformationFilledIcon fill="#0f62fe" />
                 </p>
                 <p className="guidance-content">
-                  This page allows you to compare and manipulate different
-                  planning scenarios.
+                  This page allows you to compare and manipulate different planning scenarios.
                   <br />
                   <br />
-                  You have selected the Auto-Assign AI Mode, the shown scenario
-                  is created by the system. You can manipulate each parameter to
-                  your liking or create other scenarios to directly compare them
-                  on one screen.
+                  You have selected the Auto-Assign AI Mode, the shown scenario is created by the
+                  system. You can manipulate each parameter to your liking or create other scenarios
+                  to directly compare them on one screen.
                 </p>
               </div>
               <div class="footer-wrapper">
@@ -664,10 +627,7 @@ const { md, carbonMd } = useBreakpoints();
                 <!-- </span> -->
                 <!-- <span class="full-width"> -->
                 <cv-button kind="secondary" class="w50 bottom0">Back</cv-button>
-                <cv-button
-                  :icon="ArrowRightIcon"
-                  class="w50 bottom0"
-                  @click="saveSelectedPlan()"
+                <cv-button :icon="ArrowRightIcon" class="w50 bottom0" @click="saveSelectedPlan()"
                   >Save selected plan</cv-button
                 >
                 <!-- </span> -->
@@ -711,7 +671,7 @@ const { md, carbonMd } = useBreakpoints();
   /* color: #000; */
 
   /* Productive/heading-04 */
-  font-family: "IBM Plex Sans";
+  font-family: 'IBM Plex Sans';
   font-size: 28px;
   font-style: normal;
   font-weight: 400;
@@ -719,10 +679,10 @@ const { md, carbonMd } = useBreakpoints();
 }
 
 .title20 {
-  color: var(--Text-text-primary, #161616);
+  /* color: var(--Text-text-primary, #161616); */
 
   /* Fixed heading styles/heading-03 */
-  font-family: var(--Fixed-Heading-Heading-03-Font-family, "IBM Plex Sans");
+  font-family: var(--Fixed-Heading-Heading-03-Font-family, 'IBM Plex Sans');
   font-size: 20px;
   font-style: normal;
   font-weight: 400;
@@ -730,10 +690,10 @@ const { md, carbonMd } = useBreakpoints();
 }
 
 .text14 {
-  color: var(--Text-text-primary, #161616);
+  /* color: var(--Text-text-primary, #161616); */
 
   /* Body styles/body-compact-01 */
-  font-family: var(--Fixed-Body-Font-family, "IBM Plex Sans");
+  font-family: var(--Fixed-Body-Font-family, 'IBM Plex Sans');
   font-size: 14px;
   font-style: normal;
   font-weight: 400;
@@ -745,7 +705,7 @@ const { md, carbonMd } = useBreakpoints();
   /* color: #000; */
 
   /* Body styles/body-01 */
-  font-family: var(--Fixed-Body-Font-family, "IBM Plex Sans");
+  font-family: var(--Fixed-Body-Font-family, 'IBM Plex Sans');
   font-size: 14px;
   font-style: normal;
   font-weight: 400;
@@ -786,7 +746,8 @@ const { md, carbonMd } = useBreakpoints();
 }
 
 .frame-left-panel {
-  background-color: white;
+  background: var(--cds-ui-01);
+  /* background-color: white; */
   /* background-color: red; */
   display: flex;
   padding: 16px;
@@ -798,7 +759,8 @@ const { md, carbonMd } = useBreakpoints();
 }
 
 .frame-right-panel {
-  background-color: white;
+  background: var(--cds-ui-01);
+  /* background-color: white; */
   /* background-color: green; */
   display: flex;
   padding: 16px 16px 16px 17px;
@@ -823,7 +785,8 @@ const { md, carbonMd } = useBreakpoints();
   top: 3rem;
   bottom: 0;
   right: 0;
-  background: white;
+  background: var(--cds-ui-01);
+  /* background: white; */
 }
 
 .v-stretch {
@@ -906,12 +869,13 @@ const { md, carbonMd } = useBreakpoints();
   margin: 16px;
   padding: 16px;
   border-radius: 8px;
-  border: 1px solid var(--border-subtle-contextual, #e0e0e0);
-  background: var(--Notification-notification-info-background, #edf5ff);
+  /* border: 1px solid var(--border-subtle-contextual, #e0e0e0); */
+  /* background: var(--Notification-notification-info-background, #edf5ff); */
 }
 
 .guidance-title {
-  color: #000;
+  /* color: #000; */
+  color: var(--cds-text-primary);
   padding-bottom: 10px;
   display: flex;
   justify-content: space-between;
@@ -919,7 +883,7 @@ const { md, carbonMd } = useBreakpoints();
   align-self: stretch;
 
   /* Fixed heading styles/heading-compact-01 */
-  font-family: var(--Fixed-Heading-Font-family, "IBM Plex Sans");
+  font-family: var(--Fixed-Heading-Font-family, 'IBM Plex Sans');
   font-size: 14px;
   font-style: normal;
   font-weight: 600;
@@ -928,13 +892,11 @@ const { md, carbonMd } = useBreakpoints();
 }
 
 .guidance-content {
-  color: #000;
+  /* color: #000; */
+  color: var(--cds-text-primary);
 
   /* Utility styles/helper-text-01 */
-  font-family: var(
-    --fixed-utility-helper-text-0102-font-family,
-    "IBM Plex Sans"
-  );
+  font-family: var(--fixed-utility-helper-text-0102-font-family, 'IBM Plex Sans');
   font-size: 12px;
   font-style: normal;
   font-weight: 400;
@@ -1040,7 +1002,8 @@ ul li {
 }
 
 .background_white {
-  background: white;
+  background: var(--cds-ui-01);
+  /* background: white; */
   /* background: var(--color-gray-200, currentcolor); */
 }
 
@@ -1052,7 +1015,8 @@ ul li {
   gap: 16px;
   align-self: stretch;
 
-  background: white;
+  background: var(--cds-ui-01);
+  /* background: white; */
 }
 
 .chart-content {
@@ -1110,8 +1074,7 @@ ul li {
 }
 
 .blurredScenario {
-  background: url("@/assets/new-scenario-blurred.png") lightgray 35% / cover
-    no-repeat;
+  background: url('@/assets/new-scenario-blurred.png') lightgray 35% / cover no-repeat;
   height: 100%;
   /* background-size: auto 100%; */
   /* height: 100vh; */
@@ -1165,7 +1128,7 @@ ul li {
   color: #000;
 
   /* Fixed heading styles/heading-compact-01 */
-  font-family: var(--Fixed-Heading-Font-family, "IBM Plex Sans");
+  font-family: var(--Fixed-Heading-Font-family, 'IBM Plex Sans');
   font-size: 14px;
   font-style: normal;
   font-weight: 600;
@@ -1177,7 +1140,7 @@ ul li {
   color: var(--Text-text-primary, #161616);
 
   /* Fixed heading styles/heading-02 */
-  font-family: var(--Fixed-Heading-Font-family, "IBM Plex Sans");
+  font-family: var(--Fixed-Heading-Font-family, 'IBM Plex Sans');
   font-size: 16px;
   font-style: normal;
   font-weight: 600;

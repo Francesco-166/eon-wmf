@@ -7,8 +7,8 @@
 defineProps({
   classes: { type: String },
   line: { type: Boolean },
-  lineColor: { type: String, default: "red" },
-});
+  lineColor: { type: String, default: 'red' },
+})
 </script>
 
 <template>
@@ -47,7 +47,12 @@ defineProps({
   flex: 1 0 0;
   /* height: 100%; */
 
-  background: var(--Default-Neutral-White, #fff);
+  /* background: var(--Default-Neutral-White, #fff); */
+  /* background: var(--cds-ui-01); */
+}
+
+.widget:not(.bx--inline-notification--low-contrast) {
+  background: var(--cds-ui-01);
 }
 
 .border-left {
@@ -60,7 +65,7 @@ defineProps({
 }
 
 .red {
-  background: var(--Notification-notification-error-background, #fff1f1);
+  /* background: var(--Notification-notification-error-background, #fff1f1); */
 }
 
 .yellow {
@@ -96,7 +101,7 @@ defineProps({
   align-self: stretch;
 
   /* color: #000; */
-  font-family: "IBM Plex Sans";
+  font-family: 'IBM Plex Sans';
   font-size: 14px;
   font-style: normal;
   font-weight: 400;
@@ -114,7 +119,7 @@ defineProps({
 
 .widget-primary {
   /* color: var(--Gray-10, #111); */
-  font-family: "IBM Plex Sans";
+  font-family: 'IBM Plex Sans';
   font-size: 32px;
   font-style: normal;
   font-weight: 400;
@@ -124,7 +129,7 @@ defineProps({
 .widget-body {
   align-self: stretch;
   /* color: #000; */
-  font-family: "IBM Plex Sans";
+  font-family: 'IBM Plex Sans';
   font-size: 14px;
   font-style: normal;
   font-weight: 400;
@@ -146,7 +151,7 @@ defineProps({
   align-self: stretch;
 
   /* color: #000; */
-  font-family: "IBM Plex Sans";
+  font-family: 'IBM Plex Sans';
   font-size: 14px;
   font-style: normal;
   font-weight: 400;

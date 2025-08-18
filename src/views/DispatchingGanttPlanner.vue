@@ -1,20 +1,17 @@
 <script setup>
-import { useRouter, RouterLink } from "vue-router";
-import { useFishStore } from "../stores/fish";
-import FishRow from "../components/FishRow.vue";
-import ResourceRow from "../components/ResourceRow.vue";
-import { computed, onMounted, ref, provide, watch } from "vue";
-import {
-  View20 as ShowAllIcon,
-  ViewOff20 as HideIcon,
-} from "@carbon/icons-vue";
-import { useTranslation } from "i18next-vue";
-import FishRowEmpty from "@/components/FishRowEmpty.vue";
-import { useLanguageStore } from "@/stores/language.js";
-import { useBreakpoints } from "@/composables/useBreakpoints.js";
-import MobileTablePagination from "@/components/MobileTablePagination.vue";
-import WidgetKPI from "../components/WidgetKPI.vue";
-import FrameTitle from "../components/FrameTitle.vue";
+import { useRouter, RouterLink } from 'vue-router'
+import { useFishStore } from '../stores/fish'
+import FishRow from '../components/FishRow.vue'
+import ResourceRow from '../components/ResourceRow.vue'
+import { computed, onMounted, ref, provide, watch } from 'vue'
+import { View20 as ShowAllIcon, ViewOff20 as HideIcon } from '@carbon/icons-vue'
+import { useTranslation } from 'i18next-vue'
+import FishRowEmpty from '@/components/FishRowEmpty.vue'
+import { useLanguageStore } from '@/stores/language.js'
+import { useBreakpoints } from '@/composables/useBreakpoints.js'
+import MobileTablePagination from '@/components/MobileTablePagination.vue'
+import WidgetKPI from '../components/WidgetKPI.vue'
+import FrameTitle from '../components/FrameTitle.vue'
 import {
   Parameter16 as ParameterIcon,
   Edit16 as EditIcon,
@@ -40,136 +37,135 @@ import {
   // UserAvatar20 as AvatarIcon,
   // Switcher20 as SwitcherIcon,
   // ColorPalette20 as ThemeIcon,
-} from "@carbon/icons-vue";
-import data0 from "@/assets/data/dispatchingReviewUtilisationData.ts";
-import woData0 from "@/assets/data/dispatchingReviewWoData.ts";
-import chartOptions from "@/assets/data/dispatchingReviewUtilisationStackedBarChartOptions.ts";
-import resourcesData from "@/assets/data/annualPlanningInternalResources.ts";
-import providersData from "@/assets/data/annualPlanningExternalProviders.ts";
+} from '@carbon/icons-vue'
+import data0 from '@/assets/data/dispatchingReviewUtilisationData.ts'
+import woData0 from '@/assets/data/dispatchingReviewWoData.ts'
+import chartOptions from '@/assets/data/dispatchingReviewUtilisationStackedBarChartOptions.ts'
+import resourcesData from '@/assets/data/annualPlanningInternalResources.ts'
+import providersData from '@/assets/data/annualPlanningExternalProviders.ts'
 
-const router = useRouter();
-const data = ref(data0);
-const woData = ref(woData0);
-const options = ref(chartOptions);
-const resources = ref(resourcesData);
-const providers = ref(providersData);
+const router = useRouter()
+const data = ref(data0)
+const woData = ref(woData0)
+const options = ref(chartOptions)
+const resources = ref(resourcesData)
+const providers = ref(providersData)
 // console.warn(resources.value)
-const selectPlanningModeModalVisible = ref(false);
-const showNotification = ref(true);
+const selectPlanningModeModalVisible = ref(false)
+const showNotification = ref(true)
 
 function hideNotification() {
-  console.warn("hideNotification");
+  console.warn('hideNotification')
   // selectPlanningModeModalVisible.value = true;
-  showNotification.value = false;
+  showNotification.value = false
 }
 
 // const planningModeAI = ref(true);
 // const planningModeManual = ref(false);
 
-const { t, i18next } = useTranslation();
-const langStore = useLanguageStore();
+const { t, i18next } = useTranslation()
+const langStore = useLanguageStore()
 
-const hideIcon = HideIcon;
-const fishStore = useFishStore();
-const loading = ref(false);
-const pagination = ref({ numberOfItems: 0, pageSizes: [7, 11, 23, 31] });
+const hideIcon = HideIcon
+const fishStore = useFishStore()
+const loading = ref(false)
+const pagination = ref({ numberOfItems: 0, pageSizes: [7, 11, 23, 31] })
 const i18nPagination = computed(() => {
   return {
     ...pagination.value,
-    pageSizesLabel: t("items"),
-    backwardText: t("previous-page"),
-    forwardText: t("next-page"),
-    pageNumberLabel: t("page-number"),
-  };
-});
+    pageSizesLabel: t('items'),
+    backwardText: t('previous-page'),
+    forwardText: t('next-page'),
+    pageNumberLabel: t('page-number'),
+  }
+})
 onMounted(() => {
-  loading.value = true;
+  loading.value = true
   try {
     fishStore.loadFish().finally(() => {
-      pagination.value.numberOfItems = fishStore.fish.length;
-      loading.value = false;
-    });
+      pagination.value.numberOfItems = fishStore.fish.length
+      loading.value = false
+    })
   } catch (e) {
-    console.error("error loading fish from API", e.message);
+    console.error('error loading fish from API', e.message)
   }
-});
-const sortKeys = ref({ index: "0", order: "none", name: null });
+})
+const sortKeys = ref({ index: '0', order: 'none', name: null })
 function onSort(keys) {
-  sortKeys.value = keys;
+  sortKeys.value = keys
 }
 
-const searchFilter = ref("");
+const searchFilter = ref('')
 /**
  * Set a search filter
  * @param {string} val
  */
 function onSearch(val) {
-  searchFilter.value = val?.trim();
+  searchFilter.value = val?.trim()
 }
-const showHidden = ref(false);
+const showHidden = ref(false)
 const filteredFish = computed(() => {
   // start with all the fish
   /** @type {Array<FishData>} */
-  let show = fishStore.fish;
+  let show = fishStore.fish
 
   // if we are not showing hidden fish, remove them
-  if (!showHidden.value) show = show.filter((fish) => !fish.hidden);
+  if (!showHidden.value) show = show.filter((fish) => !fish.hidden)
 
   // if we have search term, filter based on that term
-  if (searchFilter.value)
-    show = show.filter((fish) => fish.key.includes(searchFilter.value));
+  if (searchFilter.value) show = show.filter((fish) => fish.key.includes(searchFilter.value))
 
   // If we are sorting the data, do that here
-  if (sortKeys.value.order !== "none") {
+  if (sortKeys.value.order !== 'none') {
     show.sort((a, b) => {
-      const _a = a[sortKeys.value.name]; // fish name or price
-      const _b = b[sortKeys.value.name]; // fish name or price
-      let cmp = 0;
+      const _a = a[sortKeys.value.name] // fish name or price
+      const _b = b[sortKeys.value.name] // fish name or price
+      let cmp = 0
       // sort by price (or some other number value that may get added later)
-      if (typeof _a === "number") {
-        cmp = _a - _b;
+      if (typeof _a === 'number') {
+        cmp = _a - _b
       }
       // or sort by name
-      else if (sortKeys.value.name === "name") {
-        const key = "name-" + langStore.languageObject.api;
-        const nameA = _a[key] || "";
-        const nameB = _b[key] || "";
-        cmp = nameA.localeCompare(nameB, i18next.language);
+      else if (sortKeys.value.name === 'name') {
+        const key = 'name-' + langStore.languageObject.api
+        const nameA = _a[key] || ''
+        const nameB = _b[key] || ''
+        cmp = nameA.localeCompare(nameB, i18next.language)
       }
       // reverse the sort
-      if (sortKeys.value.order === "descending") cmp = -cmp;
-      return cmp;
-    });
+      if (sortKeys.value.order === 'descending') cmp = -cmp
+      return cmp
+    })
   }
-  return show;
-});
+  return show
+})
 watch(filteredFish, () => {
-  pagination.value.numberOfItems = filteredFish.value.length;
-});
+  pagination.value.numberOfItems = filteredFish.value.length
+})
 
 function saveDispatch() {
-  console.warn("saveDispatch");
-  router.push("DispatchingFinal");
+  console.warn('saveDispatch')
+  router.push('DispatchingFinal')
 }
 
-const planningModeAI = ref(true);
+const planningModeAI = ref(true)
 // planningModeAI.value = computed(() => {
 //   console.warn("AI....");
 //   return !planningModeManual.value;
 // });
 
 const planningModeManual = computed(() => {
-  return !planningModeAI.value;
-});
+  return !planningModeAI.value
+})
 
 // watch(planningModeAI, () => {
 //   console.warn("AI");
 //   //   planningModeManual.value = false;
 // });
 watch(planningModeManual, () => {
-  console.warn("manual");
-  planningModeAI.value = !planningModeManual.value;
-});
+  console.warn('manual')
+  planningModeAI.value = !planningModeManual.value
+})
 
 // function planningModeAISelected() {
 //   console.warn("AI");
@@ -183,47 +179,44 @@ watch(planningModeManual, () => {
 // }
 
 function onPrimaryClick() {
-  console.warn("primary");
-  router.push("DispatchingReview");
+  console.warn('primary')
+  router.push('DispatchingReview')
 }
 
 function getFirstLetters(str) {
   const firstLetters = str
-    .split(" ")
+    .split(' ')
     .map((word) => word.charAt(0))
-    .join("");
+    .join('')
 
-  return firstLetters;
+  return firstLetters
 }
 
 function toggleShowAll() {
-  showHidden.value = !showHidden.value;
+  showHidden.value = !showHidden.value
 }
 
-const currentPagination = ref({ start: 1, length: 7 });
+const currentPagination = ref({ start: 1, length: 7 })
 const paginated = computed(() => {
-  const change = currentPagination.value;
-  return filteredFish.value.slice(
-    change.start - 1,
-    change.start + change.length - 1
-  );
-});
+  const change = currentPagination.value
+  return filteredFish.value.slice(change.start - 1, change.start + change.length - 1)
+})
 function onPagination(change) {
-  currentPagination.value = change;
+  currentPagination.value = change
 }
-const selectedFish = ref([]);
+const selectedFish = ref([])
 function onHideSelected() {
   for (let i = 0; i < selectedFish.value.length; i++) {
-    const key = selectedFish.value[i];
-    fishStore.hideFish(key);
+    const key = selectedFish.value[i]
+    fishStore.hideFish(key)
   }
-  selectedFish.value = [];
+  selectedFish.value = []
 }
 
-const showCatchPhrases = ref(false);
-provide("show-catch-phrases", showCatchPhrases);
+const showCatchPhrases = ref(false)
+provide('show-catch-phrases', showCatchPhrases)
 
-const { md, carbonMd } = useBreakpoints();
+const { md, carbonMd } = useBreakpoints()
 </script>
 
 <template>
@@ -236,9 +229,8 @@ const { md, carbonMd } = useBreakpoints();
             <div class="title-frame">
               <div class="title">New plan - Review Scope</div>
               <div class="subtitle">
-                This page provides a breakdown of your selected work orders as
-                well as selected location and planning resources to start
-                creating scenarios.
+                This page provides a breakdown of your selected work orders as well as selected
+                location and planning resources to start creating scenarios.
               </div>
             </div>
           </div>
@@ -248,37 +240,13 @@ const { md, carbonMd } = useBreakpoints();
               @tab-selected-id="onTabSelectedId"
               aria-label="navigation tab label"
             >
-              <cv-tab
-                id="tab-1"
-                label="W1 - 1.1. - 7.1."
-                :selected="true"
-                :disabled="false"
-              >
+              <cv-tab id="tab-1" label="W1 - 1.1. - 7.1." :selected="true" :disabled="false">
               </cv-tab>
-              <cv-tab
-                id="tab-2"
-                label="W2 - 8.1. - 13.1."
-                :selected="false"
-                :disabled="false"
-              >
+              <cv-tab id="tab-2" label="W2 - 8.1. - 13.1." :selected="false" :disabled="false">
               </cv-tab>
-              <cv-tab
-                id="tab-3"
-                label="Woche 3"
-                :selected="false"
-                :disabled="false"
-              >
-              </cv-tab>
-              <cv-tab
-                id="tab-4"
-                label="Woche 4"
-                :selected="false"
-                :disabled="false"
-              >
-              </cv-tab>
-              <template v-if="slottedTabs" #tab-1="tab">
-                House <SampleIcon />
-              </template>
+              <cv-tab id="tab-3" label="Woche 3" :selected="false" :disabled="false"> </cv-tab>
+              <cv-tab id="tab-4" label="Woche 4" :selected="false" :disabled="false"> </cv-tab>
+              <template v-if="slottedTabs" #tab-1="tab"> House <SampleIcon /> </template>
               <template v-if="slottedTabs" #tab-2="tab">
                 {{ tab.label }} <strong style="color: red">(*)</strong>
               </template>
@@ -300,15 +268,9 @@ const { md, carbonMd } = useBreakpoints();
             <div class="frame1">
               <div class="frame-content background_white">
                 <FrameTitle>
-                  <template #title>
-                    Work Order Distribution by Region
-                  </template>
+                  <template #title> Work Order Distribution by Region </template>
                   <template #rightSide>
-                    <cv-button
-                      class="button_ghost"
-                      :icon="MaximizeIcon"
-                      kind="ghost"
-                    >
+                    <cv-button class="button_ghost" :icon="MaximizeIcon" kind="ghost">
                       Fullscreen
                     </cv-button>
                   </template>
@@ -358,9 +320,7 @@ const { md, carbonMd } = useBreakpoints();
                         width="13"
                         height="13"
                       ></div>
-                      <p id="chart-168b558baf544-legend-datagroup-0-title">
-                        Scheduled Maintenance
-                      </p>
+                      <p id="chart-168b558baf544-legend-datagroup-0-title">Scheduled Maintenance</p>
                     </div>
                     <div class="legend-item active">
                       <div
@@ -387,9 +347,7 @@ const { md, carbonMd } = useBreakpoints();
                           ></path>
                         </svg>
                       </div>
-                      <p id="chart-168b558baf544-legend-datagroup-1-title">
-                        Inspections
-                      </p>
+                      <p id="chart-168b558baf544-legend-datagroup-1-title">Inspections</p>
                     </div>
                     <div class="legend-item active">
                       <div
@@ -416,9 +374,7 @@ const { md, carbonMd } = useBreakpoints();
                           ></path>
                         </svg>
                       </div>
-                      <p id="chart-168b558baf544-legend-datagroup-2-title">
-                        Build
-                      </p>
+                      <p id="chart-168b558baf544-legend-datagroup-2-title">Build</p>
                     </div>
                     <div class="legend-item active">
                       <div
@@ -445,9 +401,7 @@ const { md, carbonMd } = useBreakpoints();
                           ></path>
                         </svg>
                       </div>
-                      <p id="chart-168b558baf544-legend-datagroup-3-title">
-                        Meter Calibration
-                      </p>
+                      <p id="chart-168b558baf544-legend-datagroup-3-title">Meter Calibration</p>
                     </div>
                   </div>
                 </div>
@@ -621,22 +575,17 @@ const { md, carbonMd } = useBreakpoints();
             </div>
             <div class="bottom">
               <div class="notes">
-                <p className="notes-title">
-                  AI Assignments: W1 2026:<ai-label-icon />
-                </p>
+                <p className="notes-title">AI Assignments: W1 2026:<ai-label-icon /></p>
                 <div class="bold">You selected AI Smart Assign.</div>
                 <div className="notes-content">
-                  You selected AI Smart Assign. The system automatically
-                  assigned matching technicians based on the location,
-                  qualifi-cations and other synergies.
+                  You selected AI Smart Assign. The system automatically assigned matching
+                  technicians based on the location, qualifi-cations and other synergies.
                   <div class="link">learn more</div>
                 </div>
               </div>
               <div class="notes">
                 <div className="notes-title">
-                  <div class="inline">
-                    <user-service-icon />&nbsp;&nbsp;Technician assigned
-                  </div>
+                  <div class="inline"><user-service-icon />&nbsp;&nbsp;Technician assigned</div>
                   <ai-label-icon />
                 </div>
                 <div className="notes-content">
@@ -658,9 +607,7 @@ const { md, carbonMd } = useBreakpoints();
               </div>
               <div class="notes">
                 <div className="notes-title">
-                  <div class="inline">
-                    <user-service-icon />&nbsp;&nbsp;Technician assigned
-                  </div>
+                  <div class="inline"><user-service-icon />&nbsp;&nbsp;Technician assigned</div>
                   <ai-label-icon />
                 </div>
                 <div className="notes-content">
@@ -684,10 +631,7 @@ const { md, carbonMd } = useBreakpoints();
                 <!-- </span> -->
                 <!-- <span class="full-width"> -->
                 <cv-button kind="secondary" class="w50 bottom0">Back</cv-button>
-                <cv-button
-                  :icon="CheckmarkOutlineIcon"
-                  class="w50 bottom0"
-                  @click="saveDispatch()"
+                <cv-button :icon="CheckmarkOutlineIcon" class="w50 bottom0" @click="saveDispatch()"
                   >Save & Dispatch</cv-button
                 >
                 <!-- </span> -->
@@ -702,12 +646,10 @@ const { md, carbonMd } = useBreakpoints();
                 <checkmark-filled-icon fill="green" />
               </div>
               <div class="popup-middle">
-                <div class="bold">
-                  Success: Technicians automatically assigned
-                </div>
-                All selected work orders and operations have been assigned with
-                matching technicians. See right pane to find out how they have
-                been matched.<br /><br />01.01.2026 - 08:30 Uhr
+                <div class="bold">Success: Technicians automatically assigned</div>
+                All selected work orders and operations have been assigned with matching
+                technicians. See right pane to find out how they have been matched.<br /><br />01.01.2026
+                - 08:30 Uhr
               </div>
               <div class="popup-right"><close-icon /></div>
             </div>
@@ -726,11 +668,7 @@ const { md, carbonMd } = useBreakpoints();
     <template v-slot:title>Choose your planning mode</template>
     <template v-slot:content>
       <div class="frame-progress">
-        <cv-progress
-          :initial-step="1"
-          :vertical="false"
-          space-equally="spaceEqually"
-        >
+        <cv-progress :initial-step="1" :vertical="false" space-equally="spaceEqually">
           <cv-progress-step
             :complete="true"
             id="step-1"
@@ -764,9 +702,8 @@ const { md, carbonMd } = useBreakpoints();
       <br /> -->
       <div>
         <p>
-          This step lets you decide the level of automation and control you want
-          in your planning process. Both modes incorporate AI-generated
-          suggestions to help optimize your plan.
+          This step lets you decide the level of automation and control you want in your planning
+          process. Both modes incorporate AI-generated suggestions to help optimize your plan.
         </p>
         <br />
         <div class="widget-wrap">
@@ -794,20 +731,17 @@ const { md, carbonMd } = useBreakpoints();
             <br />
             <cv-list>
               <cv-list-item>
-                Let AI handle the complexity - fast, optimized scheduling with
-                AI-powered recommendations
+                Let AI handle the complexity - fast, optimized scheduling with AI-powered
+                recommendations
                 <span class="bold">based on past data</span> as a starting point
               </cv-list-item>
               <cv-list-item>
-                You can still review and edit these suggestions before
-                finalizing.
+                You can still review and edit these suggestions before finalizing.
               </cv-list-item>
             </cv-list>
             <cv-structured-list condensed>
               <template #headings>
-                <cv-structured-list-heading>
-                  Best for:
-                </cv-structured-list-heading>
+                <cv-structured-list-heading> Best for: </cv-structured-list-heading>
               </template>
               <template #items>
                 <cv-structured-list-item>
@@ -820,17 +754,15 @@ const { md, carbonMd } = useBreakpoints();
                 <cv-structured-list-item>
                   <cv-structured-list-data>
                     <span class="inline">
-                      <checkmark-outline-icon />&nbsp;Many variables &
-                      constraints (e.g.,<br />technician skills, availability,
-                      travel time)
+                      <checkmark-outline-icon />&nbsp;Many variables & constraints (e.g.,<br />technician
+                      skills, availability, travel time)
                     </span>
                   </cv-structured-list-data>
                 </cv-structured-list-item>
                 <cv-structured-list-item>
                   <cv-structured-list-data>
                     <span class="inline">
-                      <checkmark-outline-icon />&nbsp;Teams with predictable
-                      task patterns
+                      <checkmark-outline-icon />&nbsp;Teams with predictable task patterns
                     </span>
                   </cv-structured-list-data>
                 </cv-structured-list-item>
@@ -848,19 +780,15 @@ const { md, carbonMd } = useBreakpoints();
             <br />
             <br />
             <cv-list>
+              <cv-list-item> Take full control of resource/technician allocation </cv-list-item>
               <cv-list-item>
-                Take full control of resource/technician allocation
-              </cv-list-item>
-              <cv-list-item>
-                AI suggestions are still provided to guide your decisions if you
-                would like to use them
+                AI suggestions are still provided to guide your decisions if you would like to use
+                them
               </cv-list-item>
             </cv-list>
             <cv-structured-list condensed>
               <template #headings>
-                <cv-structured-list-heading>
-                  Best for:
-                </cv-structured-list-heading>
+                <cv-structured-list-heading> Best for: </cv-structured-list-heading>
               </template>
               <template #items>
                 <cv-structured-list-item>
@@ -873,16 +801,14 @@ const { md, carbonMd } = useBreakpoints();
                 <cv-structured-list-item>
                   <cv-structured-list-data>
                     <span class="inline">
-                      <checkmark-outline-icon />&nbsp;High-priority tasks
-                      requiring specific<br />expertise
+                      <checkmark-outline-icon />&nbsp;High-priority tasks requiring specific<br />expertise
                     </span>
                   </cv-structured-list-data>
                 </cv-structured-list-item>
                 <cv-structured-list-item>
                   <cv-structured-list-data>
                     <span class="inline">
-                      <checkmark-outline-icon />&nbsp;Teams with predictable
-                      task patterns
+                      <checkmark-outline-icon />&nbsp;Teams with predictable task patterns
                     </span>
                   </cv-structured-list-data>
                 </cv-structured-list-item>
@@ -935,7 +861,7 @@ const { md, carbonMd } = useBreakpoints();
   /* color: #000; */
 
   /* Productive/heading-04 */
-  font-family: "IBM Plex Sans";
+  font-family: 'IBM Plex Sans';
   font-size: 28px;
   font-style: normal;
   font-weight: 400;
@@ -946,7 +872,7 @@ const { md, carbonMd } = useBreakpoints();
   color: var(--Text-text-primary, #161616);
 
   /* Fixed heading styles/heading-03 */
-  font-family: var(--Fixed-Heading-Heading-03-Font-family, "IBM Plex Sans");
+  font-family: var(--Fixed-Heading-Heading-03-Font-family, 'IBM Plex Sans');
   font-size: 20px;
   font-style: normal;
   font-weight: 400;
@@ -957,7 +883,7 @@ const { md, carbonMd } = useBreakpoints();
   color: var(--Text-text-primary, #161616);
 
   /* Body styles/body-compact-01 */
-  font-family: var(--Fixed-Body-Font-family, "IBM Plex Sans");
+  font-family: var(--Fixed-Body-Font-family, 'IBM Plex Sans');
   font-size: 14px;
   font-style: normal;
   font-weight: 400;
@@ -969,7 +895,7 @@ const { md, carbonMd } = useBreakpoints();
   /* color: #000; */
 
   /* Body styles/body-01 */
-  font-family: var(--Fixed-Body-Font-family, "IBM Plex Sans");
+  font-family: var(--Fixed-Body-Font-family, 'IBM Plex Sans');
   font-size: 14px;
   font-style: normal;
   font-weight: 400;
@@ -1011,7 +937,8 @@ const { md, carbonMd } = useBreakpoints();
   top: 3rem;
   bottom: 0;
   right: 0;
-  background: white;
+  /* background: white; */
+  background: var(--cds-ui-01);
 }
 
 .v-stretch {
@@ -1055,7 +982,7 @@ const { md, carbonMd } = useBreakpoints();
   align-self: stretch;
 
   /* Fixed heading styles/heading-compact-01 */
-  font-family: var(--Fixed-Heading-Font-family, "IBM Plex Sans");
+  font-family: var(--Fixed-Heading-Font-family, 'IBM Plex Sans');
   font-size: 14px;
   font-style: normal;
   font-weight: 600;
@@ -1067,10 +994,7 @@ const { md, carbonMd } = useBreakpoints();
   color: #000;
 
   /* Utility styles/helper-text-01 */
-  font-family: var(
-    --fixed-utility-helper-text-0102-font-family,
-    "IBM Plex Sans"
-  );
+  font-family: var(--fixed-utility-helper-text-0102-font-family, 'IBM Plex Sans');
   font-size: 12px;
   font-style: normal;
   font-weight: 400;
@@ -1163,10 +1087,7 @@ ul li {
 .gradient {
   color: white;
   padding: 16px;
-  background: var(
-    --Gradient,
-    linear-gradient(90deg, #001d6c -3.12%, #6929c4 80.7%)
-  );
+  background: var(--Gradient, linear-gradient(90deg, #001d6c -3.12%, #6929c4 80.7%));
   /* background: linear-gradient(90deg, #6929C4 0%, rgba(105, 41, 196, 0.80) 50%, red 100%); */
 }
 
@@ -1195,7 +1116,8 @@ ul li {
 
 .background_white {
   /* display: block; */
-  background: white;
+  /* background: white; */
+  background: var(--cds-ui-01);
   /* flex-direction: column; */
   /* height: auto; */
   /* align-self: stretch; */
@@ -1203,7 +1125,7 @@ ul li {
 }
 
 .map {
-  background: url("@/assets/map.png") lightgray 35% / cover no-repeat;
+  background: url('@/assets/map.png') lightgray 35% / cover no-repeat;
   width: 100%;
   height: 550px;
   /* height: auto; */
@@ -1217,7 +1139,7 @@ ul li {
 }
 
 .gantt {
-  background: url("@/assets/gantt.png") lightgray 35% / cover no-repeat;
+  background: url('@/assets/gantt.png') lightgray 35% / cover no-repeat;
   width: 100%;
   height: 630px;
 }
@@ -1230,7 +1152,8 @@ ul li {
   gap: 16px;
   align-self: stretch;
 
-  background: white;
+  /* background: white; */
+  background: var(--cds-ui-01);
 }
 
 .chart-content {
@@ -1331,7 +1254,7 @@ ul li {
   color: #000;
 
   /* Fixed heading styles/heading-compact-01 */
-  font-family: var(--Fixed-Heading-Font-family, "IBM Plex Sans");
+  font-family: var(--Fixed-Heading-Font-family, 'IBM Plex Sans');
   font-size: 14px;
   font-style: normal;
   font-weight: 600;
@@ -1343,7 +1266,7 @@ ul li {
   color: var(--Text-text-primary, #161616);
 
   /* Fixed heading styles/heading-02 */
-  font-family: var(--Fixed-Heading-Font-family, "IBM Plex Sans");
+  font-family: var(--Fixed-Heading-Font-family, 'IBM Plex Sans');
   font-size: 16px;
   font-style: normal;
   font-weight: 600;
@@ -1368,8 +1291,9 @@ tr.bx--parent-row.bx--expandable-row + tr[data-child-row] td {
   padding-left: 1rem;
 }
 
-.nested.bx--data-table td, .bx--data-table tbody th  {
-    padding-left: 0px;
+.nested.bx--data-table td,
+.bx--data-table tbody th {
+  padding-left: 0px;
 }
 
 .popup {
