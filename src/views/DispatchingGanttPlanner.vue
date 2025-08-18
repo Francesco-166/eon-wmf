@@ -1,0 +1,1438 @@
+<script setup>
+import { useRouter, RouterLink } from "vue-router";
+import { useFishStore } from "../stores/fish";
+import FishRow from "../components/FishRow.vue";
+import ResourceRow from "../components/ResourceRow.vue";
+import { computed, onMounted, ref, provide, watch } from "vue";
+import {
+  View20 as ShowAllIcon,
+  ViewOff20 as HideIcon,
+} from "@carbon/icons-vue";
+import { useTranslation } from "i18next-vue";
+import FishRowEmpty from "@/components/FishRowEmpty.vue";
+import { useLanguageStore } from "@/stores/language.js";
+import { useBreakpoints } from "@/composables/useBreakpoints.js";
+import MobileTablePagination from "@/components/MobileTablePagination.vue";
+import WidgetKPI from "../components/WidgetKPI.vue";
+import FrameTitle from "../components/FrameTitle.vue";
+import {
+  Parameter16 as ParameterIcon,
+  Edit16 as EditIcon,
+  TimeFilled16 as TimeIcon,
+  CircleDash16 as CircleDashIcon,
+  LocationFilled16 as LocationFilledIcon,
+  UserMultiple16 as UserMultipleIcon,
+  NewTab16 as NewTabIcon,
+  Maximize16 as MaximizeIcon,
+  CheckmarkFilled16 as CheckmarkFilledIcon,
+  Checkmark16 as CheckmarkIcon,
+  CheckmarkOutline16 as CheckmarkOutlineIcon,
+  Incomplete16 as IncompleteIcon,
+  ArrowRight16 as ArrowRightIcon,
+  InformationFilled16 as InformationFilledIcon,
+  Idea16 as IdeaIcon,
+  CertificateCheck16 as CertificateCheckIcon,
+  AiLabel16 as AiLabelIcon,
+  Group16 as GroupIcon,
+  Table16 as TableIcon,
+  UserService16 as UserServiceIcon,
+  // Login20 as LoginIcon,
+  // UserAvatar20 as AvatarIcon,
+  // Switcher20 as SwitcherIcon,
+  // ColorPalette20 as ThemeIcon,
+} from "@carbon/icons-vue";
+import data0 from "@/assets/data/dispatchingReviewUtilisationData.ts";
+import woData0 from "@/assets/data/dispatchingReviewWoData.ts";
+import chartOptions from "@/assets/data/dispatchingReviewUtilisationStackedBarChartOptions.ts";
+import resourcesData from "@/assets/data/annualPlanningInternalResources.ts";
+import providersData from "@/assets/data/annualPlanningExternalProviders.ts";
+
+const router = useRouter();
+const data = ref(data0);
+const woData = ref(woData0);
+const options = ref(chartOptions);
+const resources = ref(resourcesData);
+const providers = ref(providersData);
+// console.warn(resources.value)
+const selectPlanningModeModalVisible = ref(false);
+const showNotification = ref(true);
+
+function hideNotification() {
+  console.warn("hideNotification");
+  // selectPlanningModeModalVisible.value = true;
+  showNotification.value = false;
+}
+
+// const planningModeAI = ref(true);
+// const planningModeManual = ref(false);
+
+const { t, i18next } = useTranslation();
+const langStore = useLanguageStore();
+
+const hideIcon = HideIcon;
+const fishStore = useFishStore();
+const loading = ref(false);
+const pagination = ref({ numberOfItems: 0, pageSizes: [7, 11, 23, 31] });
+const i18nPagination = computed(() => {
+  return {
+    ...pagination.value,
+    pageSizesLabel: t("items"),
+    backwardText: t("previous-page"),
+    forwardText: t("next-page"),
+    pageNumberLabel: t("page-number"),
+  };
+});
+onMounted(() => {
+  loading.value = true;
+  try {
+    fishStore.loadFish().finally(() => {
+      pagination.value.numberOfItems = fishStore.fish.length;
+      loading.value = false;
+    });
+  } catch (e) {
+    console.error("error loading fish from API", e.message);
+  }
+});
+const sortKeys = ref({ index: "0", order: "none", name: null });
+function onSort(keys) {
+  sortKeys.value = keys;
+}
+
+const searchFilter = ref("");
+/**
+ * Set a search filter
+ * @param {string} val
+ */
+function onSearch(val) {
+  searchFilter.value = val?.trim();
+}
+const showHidden = ref(false);
+const filteredFish = computed(() => {
+  // start with all the fish
+  /** @type {Array<FishData>} */
+  let show = fishStore.fish;
+
+  // if we are not showing hidden fish, remove them
+  if (!showHidden.value) show = show.filter((fish) => !fish.hidden);
+
+  // if we have search term, filter based on that term
+  if (searchFilter.value)
+    show = show.filter((fish) => fish.key.includes(searchFilter.value));
+
+  // If we are sorting the data, do that here
+  if (sortKeys.value.order !== "none") {
+    show.sort((a, b) => {
+      const _a = a[sortKeys.value.name]; // fish name or price
+      const _b = b[sortKeys.value.name]; // fish name or price
+      let cmp = 0;
+      // sort by price (or some other number value that may get added later)
+      if (typeof _a === "number") {
+        cmp = _a - _b;
+      }
+      // or sort by name
+      else if (sortKeys.value.name === "name") {
+        const key = "name-" + langStore.languageObject.api;
+        const nameA = _a[key] || "";
+        const nameB = _b[key] || "";
+        cmp = nameA.localeCompare(nameB, i18next.language);
+      }
+      // reverse the sort
+      if (sortKeys.value.order === "descending") cmp = -cmp;
+      return cmp;
+    });
+  }
+  return show;
+});
+watch(filteredFish, () => {
+  pagination.value.numberOfItems = filteredFish.value.length;
+});
+
+function saveDispatch() {
+  console.warn("saveDispatch");
+  router.push("DispatchingFinal");
+}
+
+const planningModeAI = ref(true);
+// planningModeAI.value = computed(() => {
+//   console.warn("AI....");
+//   return !planningModeManual.value;
+// });
+
+const planningModeManual = computed(() => {
+  return !planningModeAI.value;
+});
+
+// watch(planningModeAI, () => {
+//   console.warn("AI");
+//   //   planningModeManual.value = false;
+// });
+watch(planningModeManual, () => {
+  console.warn("manual");
+  planningModeAI.value = !planningModeManual.value;
+});
+
+// function planningModeAISelected() {
+//   console.warn("AI");
+//   planningModeAI.value = true;
+//   planningModeManual.value = false;
+// }
+// function planningModeManualSelected() {
+//   console.warn("Manual");
+//   planningModeAI.value = false;
+//   planningModeManual.value = true;
+// }
+
+function onPrimaryClick() {
+  console.warn("primary");
+  router.push("DispatchingReview");
+}
+
+function getFirstLetters(str) {
+  const firstLetters = str
+    .split(" ")
+    .map((word) => word.charAt(0))
+    .join("");
+
+  return firstLetters;
+}
+
+function toggleShowAll() {
+  showHidden.value = !showHidden.value;
+}
+
+const currentPagination = ref({ start: 1, length: 7 });
+const paginated = computed(() => {
+  const change = currentPagination.value;
+  return filteredFish.value.slice(
+    change.start - 1,
+    change.start + change.length - 1
+  );
+});
+function onPagination(change) {
+  currentPagination.value = change;
+}
+const selectedFish = ref([]);
+function onHideSelected() {
+  for (let i = 0; i < selectedFish.value.length; i++) {
+    const key = selectedFish.value[i];
+    fishStore.hideFish(key);
+  }
+  selectedFish.value = [];
+}
+
+const showCatchPhrases = ref(false);
+provide("show-catch-phrases", showCatchPhrases);
+
+const { md, carbonMd } = useBreakpoints();
+</script>
+
+<template>
+  <cv-grid>
+    <cv-row>
+      <cv-column :lg="14">
+        <!-- <cv-row> -->
+        <div class="content">
+          <div class="title-area">
+            <div class="title-frame">
+              <div class="title">New plan - Review Scope</div>
+              <div class="subtitle">
+                This page provides a breakdown of your selected work orders as
+                well as selected location and planning resources to start
+                creating scenarios.
+              </div>
+            </div>
+          </div>
+          <div class="w100">
+            <cv-tabs
+              @tab-selected="onTabSelected"
+              @tab-selected-id="onTabSelectedId"
+              aria-label="navigation tab label"
+            >
+              <cv-tab
+                id="tab-1"
+                label="W1 - 1.1. - 7.1."
+                :selected="true"
+                :disabled="false"
+              >
+              </cv-tab>
+              <cv-tab
+                id="tab-2"
+                label="W2 - 8.1. - 13.1."
+                :selected="false"
+                :disabled="false"
+              >
+              </cv-tab>
+              <cv-tab
+                id="tab-3"
+                label="Woche 3"
+                :selected="false"
+                :disabled="false"
+              >
+              </cv-tab>
+              <cv-tab
+                id="tab-4"
+                label="Woche 4"
+                :selected="false"
+                :disabled="false"
+              >
+              </cv-tab>
+              <template v-if="slottedTabs" #tab-1="tab">
+                House <SampleIcon />
+              </template>
+              <template v-if="slottedTabs" #tab-2="tab">
+                {{ tab.label }} <strong style="color: red">(*)</strong>
+              </template>
+              <template v-if="slottedTabs" #tab-3="tab">
+                {{ tab.label }} <strong style="color: orange">(!)</strong>
+              </template>
+            </cv-tabs>
+            <div class="pad16 gantt"></div>
+          </div>
+          <div class="frame0">
+            <div class="frame1">
+              <div class="frame-content background_white">
+                <CcvStackedBarChart class="barChart" :data :options />
+                <!-- <div class="barchart">
+                <div class="chart-content"></div>
+              </div> -->
+              </div>
+            </div>
+            <div class="frame1">
+              <div class="frame-content background_white">
+                <FrameTitle>
+                  <template #title>
+                    Work Order Distribution by Region
+                  </template>
+                  <template #rightSide>
+                    <cv-button
+                      class="button_ghost"
+                      :icon="MaximizeIcon"
+                      kind="ghost"
+                    >
+                      Fullscreen
+                    </cv-button>
+                  </template>
+                </FrameTitle>
+                <div>
+                  <cv-tag
+                    :renderIcon="CheckmarkFilledIcon"
+                    label="A.Kruse-Schomaker"
+                    kind="high-contrast"
+                  />
+                  <cv-tag
+                    :renderIcon="CheckmarkFilledIcon"
+                    label="K.Petersdorf"
+                    kind="high-contrast"
+                  />
+                  <cv-tag
+                    :renderIcon="CheckmarkFilledIcon"
+                    label="R.Krombholz"
+                    kind="high-contrast"
+                  />
+                  <cv-tag
+                    :renderIcon="CheckmarkFilledIcon"
+                    label="T.Fleischmann"
+                    kind="high-contrast"
+                  />
+                </div>
+                <div class="pad16 map"></div>
+                <div
+                  class="layout-child layout-child-43053337110 legend pad16"
+                  style="height: 16px; width: 100%"
+                >
+                  <div
+                    class="cds--cc--legend horizontal clickable"
+                    width="100%"
+                    height="100%"
+                    role="group"
+                    aria-label="Data groups"
+                    data-name="legend-items"
+                  >
+                    <div class="legend-item active">
+                      <div
+                        class="checkbox background-4-1-1 active"
+                        role="checkbox"
+                        tabindex="0"
+                        aria-labelledby="chart-168b558baf544-legend-datagroup-0-title"
+                        aria-checked="true"
+                        width="13"
+                        height="13"
+                      ></div>
+                      <p id="chart-168b558baf544-legend-datagroup-0-title">
+                        Scheduled Maintenance
+                      </p>
+                    </div>
+                    <div class="legend-item active">
+                      <div
+                        class="checkbox background-4-1-2 active"
+                        role="checkbox"
+                        tabindex="0"
+                        aria-labelledby="chart-168b558baf544-legend-datagroup-1-title"
+                        aria-checked="true"
+                        width="13"
+                        height="13"
+                      >
+                        <svg
+                          focusable="false"
+                          preserveAspectRatio="xMidYMid meet"
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="11"
+                          height="11"
+                          viewBox="0 0 31 28"
+                          aria-hidden="true"
+                          style="will-change: transform"
+                        >
+                          <path
+                            d="M13 21.2l-7.1-7.1-1.4 1.4 7.1 7.1L13 24 27.1 9.9l-1.4-1.5z"
+                          ></path>
+                        </svg>
+                      </div>
+                      <p id="chart-168b558baf544-legend-datagroup-1-title">
+                        Inspections
+                      </p>
+                    </div>
+                    <div class="legend-item active">
+                      <div
+                        class="checkbox background-4-1-3 active"
+                        role="checkbox"
+                        tabindex="0"
+                        aria-labelledby="chart-168b558baf544-legend-datagroup-2-title"
+                        aria-checked="true"
+                        width="13"
+                        height="13"
+                      >
+                        <svg
+                          focusable="false"
+                          preserveAspectRatio="xMidYMid meet"
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="11"
+                          height="11"
+                          viewBox="0 0 31 28"
+                          aria-hidden="true"
+                          style="will-change: transform"
+                        >
+                          <path
+                            d="M13 21.2l-7.1-7.1-1.4 1.4 7.1 7.1L13 24 27.1 9.9l-1.4-1.5z"
+                          ></path>
+                        </svg>
+                      </div>
+                      <p id="chart-168b558baf544-legend-datagroup-2-title">
+                        Build
+                      </p>
+                    </div>
+                    <div class="legend-item active">
+                      <div
+                        class="checkbox background-4-1-4 active"
+                        role="checkbox"
+                        tabindex="0"
+                        aria-labelledby="chart-168b558baf544-legend-datagroup-3-title"
+                        aria-checked="true"
+                        width="13"
+                        height="13"
+                      >
+                        <svg
+                          focusable="false"
+                          preserveAspectRatio="xMidYMid meet"
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="11"
+                          height="11"
+                          viewBox="0 0 31 28"
+                          aria-hidden="true"
+                          style="will-change: transform"
+                        >
+                          <path
+                            d="M13 21.2l-7.1-7.1-1.4 1.4 7.1 7.1L13 24 27.1 9.9l-1.4-1.5z"
+                          ></path>
+                        </svg>
+                      </div>
+                      <p id="chart-168b558baf544-legend-datagroup-3-title">
+                        Meter Calibration
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- <cv-row>
+          <cv-column> -->
+          <CvToggle-Skeleton v-if="loading" />
+          <!-- <cv-subtitle>hehe</cv-subtitle> -->
+          <!-- <cv-toggle
+          v-model="showCatchPhrases"
+          value="catch-pharse"
+          :label="t('catch-phrases')"
+          class="mb-2"
+        >
+          <template #text-right>
+            {{ t("yes") }}
+          </template>
+          <template #text-left>
+            {{ t("no") }}
+          </template>
+        </cv-toggle> -->
+          <!-- <cv-tile> hohoho </cv-tile> -->
+          <!-- <cv-data-table-skeleton
+            v-if="loading"
+            :columns="[t('name'), t('price'), 'CJ', t('location'), t('rarity')]"
+            :rows="7"
+            :title="t('fish')"
+            :helper-text="t('fish-info')"
+          />
+          <cv-data-table
+            v-else
+            v-model:rows-selected="selectedFish"
+            :pagination="i18nPagination"
+            :zebra="true"
+            :title="t('fish')"
+            :helper-text="t('fish-info')"
+            :batch-cancel-label="t('cancel')"
+            :action-bar-aria-label="t('actions')"
+            :collapse-all-aria-label="t('collapse-all')"
+            :expand-all-aria-label="t('expand-all')"
+            :select-all-aria-label="t('select-all')"
+            :search-label="t('search')"
+            :search-placeholder="t('search')"
+            :search-clear-label="t('search-clear')"
+            :expandable="true"
+            @pagination="onPagination"
+            @search="onSearch"
+            @sort="onSort"
+          >
+            <template #items-selected="{ scope }">
+              {{ t("selected-num", { count: scope.count }) }}
+            </template>
+            <template #of-n-pages="{ scope }">
+              {{ t("pages-num", { count: scope.pages }) }}
+            </template>
+            <template #range-text="{ scope }">
+              {{ t("range-text", scope) }}
+            </template>
+            <template v-if="filteredFish.length > 0" #batch-actions>
+              <cv-button :icon="hideIcon" @click="onHideSelected">
+                {{ t("hide") }}
+              </cv-button>
+            </template>
+            <template v-if="fishStore.someHidden" #actions>
+              <cv-data-table-action
+                :aria-label="t('show')"
+                :alt="t('show')"
+                @click="toggleShowAll"
+              >
+                <hide-icon v-if="showHidden" class="bx--toolbar-action__icon">
+                  <title>{{ t("hide") }}</title>
+                </hide-icon>
+                <show-all-icon v-else class="bx--toolbar-action__icon">
+                  <title>{{ t("show") }}</title>
+                </show-all-icon>
+              </cv-data-table-action>
+            </template>
+            <template #headings>
+              <cv-data-table-heading
+                :heading="t('name')"
+                name="name"
+                sortable
+              />
+              <cv-data-table-heading heading="" />
+              <cv-data-table-heading
+                v-if="md"
+                :heading="t('price')"
+                name="price"
+                sortable
+              />
+              <cv-data-table-heading
+                v-if="md"
+                id="fish-heading-cj"
+                heading="CJ"
+                name="price-cj"
+                sortable
+              />
+              <cv-data-table-heading
+                id="fish-heading-location"
+                :heading="t('location')"
+              />
+              <cv-data-table-heading
+                v-if="md"
+                id="fish-heading-rarity"
+                :heading="t('rarity')"
+              />
+            </template>
+            <template #data>
+              <fish-row v-for="row in paginated" :key="row.key" :fish="row" />
+              <fish-row-empty v-if="filteredFish.length === 0" />
+            </template>
+          </cv-data-table>
+          <mobile-table-pagination
+            v-if="!carbonMd"
+            :number-of-items="pagination.numberOfItems"
+            :table-pagination="currentPagination"
+            @pagination="onPagination"
+          /> -->
+          <!-- </cv-column>
+        </cv-row> -->
+        </div>
+        <!-- </cv-row> -->
+      </cv-column>
+      <cv-column :lg="3" class="negativeTopMargin1 noPad">
+        <div class="background_white noPad">
+          <div class="right-content">
+            <div class="frame-content">
+              <div class="title20">Steps</div>
+              <div class="text14">Follow these steps for finalizing a plan</div>
+            </div>
+            <div class="frame-content v-stretch">
+              <!-- MAIN
+            <div>hoho</div>
+            <div>hoho</div> -->
+              <cv-progress
+                :initial-step="2"
+                vertical="vertical"
+                :complete="true"
+                :space-equally="spaceEqually"
+              >
+                <cv-progress-step
+                  id="step-1"
+                  label="Set Scope & Parameters"
+                  additional-info="Define the planning boundaries and inputs"
+                  description="time icon description"
+                  :complete="true"
+                >
+                  <!-- <template #step-icon>
+                    <incomplete-icon />
+                  </template> -->
+                </cv-progress-step>
+                <cv-progress-step
+                  id="step-2"
+                  label="Select Planning Mode"
+                  additional-info="Choose automated or manual technician assignment"
+                  @step-clicked="onStepClicked"
+                  :complete="true"
+                />
+                <cv-progress-step
+                  id="step-3"
+                  label="Create Plan"
+                  additional-info="Review, adjust, and confirm your planning setup"
+                  @step-clicked="onStepClicked"
+                /><template #step-icon>
+                  <incomplete-icon />
+                </template>
+              </cv-progress>
+            </div>
+            <div class="bottom">
+              <div class="notes">
+                <p className="notes-title">
+                  AI Assignments: W1 2026:<ai-label-icon />
+                </p>
+                <div class="bold">You selected AI Smart Assign.</div>
+                <div className="notes-content">
+                  You selected AI Smart Assign. The system automatically
+                  assigned matching technicians based on the location,
+                  qualifi-cations and other synergies.
+                  <div class="link">learn more</div>
+                </div>
+              </div>
+              <div class="notes">
+                <div className="notes-title">
+                  <div class="inline">
+                    <user-service-icon />&nbsp;&nbsp;Technician assigned
+                  </div>
+                  <ai-label-icon />
+                </div>
+                <div className="notes-content">
+                  A.K.Schomaker has been assigned to
+                  <div class="inline link">WO12343455</div>
+                  ,
+                  <div class="inline link">WO88678</div>
+                  ,
+                  <div class="inline link">SWO69678</div>
+                  ,
+                  <div class="inline link">WO2345678</div>
+                  &
+                  <div class="inline link">WO2026087234DO</div>
+                  due to existing Plant Responsibility in similar location.
+                </div>
+                <div class="align-r">
+                  <div class="inline link">Show&nbsp;&nbsp;<table-icon /></div>
+                </div>
+              </div>
+              <div class="notes">
+                <div className="notes-title">
+                  <div class="inline">
+                    <user-service-icon />&nbsp;&nbsp;Technician assigned
+                  </div>
+                  <ai-label-icon />
+                </div>
+                <div className="notes-content">
+                  T.Fleischmann has been assigned to
+                  <div class="inline link">R12025M0001</div>
+                  ,
+                  <div class="inline link">R22025M0001</div>
+                  ,
+                  <div class="inline link">R32025M0001</div>
+                  on the same day to optimise routes and work.
+                </div>
+                <div class="align-r">
+                  <div class="inline link">Show&nbsp;&nbsp;<table-icon /></div>
+                </div>
+              </div>
+              <div class="notes">16 smart assignments in W1 2026</div>
+              <div class="footer-wrapper">
+                <!-- <span> -->
+                <!-- <div class="column50"><cv-button kind="secondary">Back</cv-button></div>
+                <div class="column50"><cv-button :icon="ArrowRightIcon">Continue</cv-button></div> -->
+                <!-- </span> -->
+                <!-- <span class="full-width"> -->
+                <cv-button kind="secondary" class="w50 bottom0">Back</cv-button>
+                <cv-button
+                  :icon="CheckmarkOutlineIcon"
+                  class="w50 bottom0"
+                  @click="saveDispatch()"
+                  >Save & Dispatch</cv-button
+                >
+                <!-- </span> -->
+              </div>
+            </div>
+            <div
+              v-if="showNotification"
+              class="popup green border-left border-green"
+              @click="hideNotification()"
+            >
+              <div class="popup-left">
+                <checkmark-filled-icon fill="green" />
+              </div>
+              <div class="popup-middle">
+                <div class="bold">
+                  Success: Technicians automatically assigned
+                </div>
+                All selected work orders and operations have been assigned with
+                matching technicians. See right pane to find out how they have
+                been matched.<br /><br />01.01.2026 - 08:30 Uhr
+              </div>
+              <div class="popup-right"><close-icon /></div>
+            </div>
+          </div>
+        </div>
+      </cv-column>
+    </cv-row>
+  </cv-grid>
+  <cv-modal
+    v-model:visible="selectPlanningModeModalVisible"
+    size="sm"
+    disableTeleport="false"
+    @primary-click="onPrimaryClick"
+  >
+    <!-- <template v-slot:label>Label of modal</template> -->
+    <template v-slot:title>Choose your planning mode</template>
+    <template v-slot:content>
+      <div class="frame-progress">
+        <cv-progress
+          :initial-step="1"
+          :vertical="false"
+          space-equally="spaceEqually"
+        >
+          <cv-progress-step
+            :complete="true"
+            id="step-1"
+            label="Set Scope & Parameters"
+            additional-info="Define the planning boundaries and inputs"
+            description="time icon description"
+          >
+            <template #step-icon>
+              <Checkmark-outline-icon />
+            </template>
+          </cv-progress-step>
+          <cv-progress-step
+            id="step-2"
+            label="Select Planning Mode"
+            additional-info="Choose between automated or manual planning"
+            @step-clicked="onStepClicked"
+          >
+            <template #step-icon>
+              <incomplete-icon />
+            </template>
+          </cv-progress-step>
+          <cv-progress-step
+            id="step-3"
+            label="Create Plan"
+            additional-info="Review, adjust & confirm your planning setup"
+            @step-clicked="onStepClicked"
+          />
+        </cv-progress>
+      </div>
+      <!-- <br />
+      <br /> -->
+      <div>
+        <p>
+          This step lets you decide the level of automation and control you want
+          in your planning process. Both modes incorporate AI-generated
+          suggestions to help optimize your plan.
+        </p>
+        <br />
+        <div class="widget-wrap">
+          <!-- {{ planningModeAI }}
+          {{ planningModeManual }} -->
+          <!-- {{ selected }} -->
+          <!-- <cv-tile
+            v-model="planningModeAI"
+            :selected="planningModeAI ? true : false"
+            kind="selectable"
+            value="ai"
+            class="w50 border1gray modal-header"
+          > -->
+          <cv-tile
+            v-model="planningModeAI"
+            value="ai"
+            kind="selectable"
+            class="w50 border1gray modal-header"
+          >
+            <span class="inline">
+              <div class="ai-label">AI</div>
+              &nbsp;Smart AI Auto-Assign
+            </span>
+            <br />
+            <br />
+            <cv-list>
+              <cv-list-item>
+                Let AI handle the complexity - fast, optimized scheduling with
+                AI-powered recommendations
+                <span class="bold">based on past data</span> as a starting point
+              </cv-list-item>
+              <cv-list-item>
+                You can still review and edit these suggestions before
+                finalizing.
+              </cv-list-item>
+            </cv-list>
+            <cv-structured-list condensed>
+              <template #headings>
+                <cv-structured-list-heading>
+                  Best for:
+                </cv-structured-list-heading>
+              </template>
+              <template #items>
+                <cv-structured-list-item>
+                  <cv-structured-list-data>
+                    <span class="inline">
+                      <checkmark-outline-icon />&nbsp;Large scale planning
+                    </span>
+                  </cv-structured-list-data>
+                </cv-structured-list-item>
+                <cv-structured-list-item>
+                  <cv-structured-list-data>
+                    <span class="inline">
+                      <checkmark-outline-icon />&nbsp;Many variables &
+                      constraints (e.g.,<br />technician skills, availability,
+                      travel time)
+                    </span>
+                  </cv-structured-list-data>
+                </cv-structured-list-item>
+                <cv-structured-list-item>
+                  <cv-structured-list-data>
+                    <span class="inline">
+                      <checkmark-outline-icon />&nbsp;Teams with predictable
+                      task patterns
+                    </span>
+                  </cv-structured-list-data>
+                </cv-structured-list-item>
+              </template>
+            </cv-structured-list>
+          </cv-tile>
+          <cv-tile
+            v-model="planningModeManual"
+            kind="selectable"
+            value="manual"
+            class="w50 border1gray modal-header"
+          >
+            <!-- <cv-tile kind="selectable" class="w50 border1gray modal-header"> -->
+            Manual Assign with AI Assistance
+            <br />
+            <br />
+            <cv-list>
+              <cv-list-item>
+                Take full control of resource/technician allocation
+              </cv-list-item>
+              <cv-list-item>
+                AI suggestions are still provided to guide your decisions if you
+                would like to use them
+              </cv-list-item>
+            </cv-list>
+            <cv-structured-list condensed>
+              <template #headings>
+                <cv-structured-list-heading>
+                  Best for:
+                </cv-structured-list-heading>
+              </template>
+              <template #items>
+                <cv-structured-list-item>
+                  <cv-structured-list-data>
+                    <span class="inline">
+                      <checkmark-outline-icon />&nbsp;Custom requirements
+                    </span>
+                  </cv-structured-list-data>
+                </cv-structured-list-item>
+                <cv-structured-list-item>
+                  <cv-structured-list-data>
+                    <span class="inline">
+                      <checkmark-outline-icon />&nbsp;High-priority tasks
+                      requiring specific<br />expertise
+                    </span>
+                  </cv-structured-list-data>
+                </cv-structured-list-item>
+                <cv-structured-list-item>
+                  <cv-structured-list-data>
+                    <span class="inline">
+                      <checkmark-outline-icon />&nbsp;Teams with predictable
+                      task patterns
+                    </span>
+                  </cv-structured-list-data>
+                </cv-structured-list-item>
+              </template>
+            </cv-structured-list>
+          </cv-tile>
+        </div>
+        <!-- <br />
+        <p>https://en.wikipedia.org/wiki/Shields_(Star_Trek)</p> -->
+      </div>
+    </template>
+    <!-- <template v-slot:other-button>other</template> -->
+    <template v-slot:secondary-button>Back</template>
+    <template v-slot:primary-button>Create plan</template>
+    <!-- <cv-link to="ScenarioPlanning">LINK</cv-link> -->
+    <!-- <template v-slot:primary-button
+      ><cv-link to="ScenarioPlanning">LINK</cv-link>LINK0</template
+    > -->
+  </cv-modal>
+</template>
+
+<style scoped>
+.content {
+  display: flex;
+  /* height: 1038px; */
+  /* padding: 106px 32px 24px 80px; */
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 24px;
+  flex: 1 0 0;
+}
+
+.title-area {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  align-self: stretch;
+}
+
+.title-frame {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  align-self: stretch;
+}
+
+.title {
+  /* color: #000; */
+
+  /* Productive/heading-04 */
+  font-family: "IBM Plex Sans";
+  font-size: 28px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 36px; /* 128.571% */
+}
+
+.title20 {
+  color: var(--Text-text-primary, #161616);
+
+  /* Fixed heading styles/heading-03 */
+  font-family: var(--Fixed-Heading-Heading-03-Font-family, "IBM Plex Sans");
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 28px; /* 140% */
+}
+
+.text14 {
+  color: var(--Text-text-primary, #161616);
+
+  /* Body styles/body-compact-01 */
+  font-family: var(--Fixed-Body-Font-family, "IBM Plex Sans");
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 18px; /* 128.571% */
+  letter-spacing: 0.16px;
+}
+
+.subtitle {
+  /* color: #000; */
+
+  /* Body styles/body-01 */
+  font-family: var(--Fixed-Body-Font-family, "IBM Plex Sans");
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 20px; /* 142.857% */
+  letter-spacing: 0.16px;
+}
+
+.widget-wrap {
+  display: flex;
+  /* align-items: flex-start; */
+  gap: 16px;
+  align-self: stretch;
+}
+
+.frame0 {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  align-self: stretch;
+}
+
+.frame1 {
+  display: flex;
+  flex-direction: column;
+  justify-content: top;
+  align-items: flex-start;
+  gap: 16px;
+  flex: 1 0 0;
+  align-self: stretch;
+}
+
+.right-content {
+  /* display: flex; */
+  /* flex-direction: column; */
+  /* align-items: flex-start; */
+  /* flex: 1 0 0; */
+  /* align-self: stretch; */
+  position: fixed;
+  top: 3rem;
+  bottom: 0;
+  right: 0;
+  background: white;
+}
+
+.v-stretch {
+  /* position: fixed; */
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  flex: 1 0 0;
+  align-self: stretch;
+  justify-content: space-between;
+  /* bottom: 0px; */
+  /* height: 100vh; */
+}
+
+.bottom {
+  position: absolute;
+  bottom: 0px;
+  right: 0px;
+  /* align-items: flex-end; */
+  flex-direction: column;
+  /* left: 0px; */
+  width: 100%;
+
+  display: flex;
+}
+
+.notes {
+  margin: 16px;
+  padding: 16px;
+  border-radius: 8px;
+  border: 1px solid var(--border-subtle-contextual, #e0e0e0);
+  /* background: var(--Notification-notification-info-background, #edf5ff); */
+}
+
+.notes-title {
+  color: #000;
+  padding-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  align-self: stretch;
+
+  /* Fixed heading styles/heading-compact-01 */
+  font-family: var(--Fixed-Heading-Font-family, "IBM Plex Sans");
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 18px; /* 128.571% */
+  letter-spacing: 0.16px;
+}
+
+.notes-content {
+  color: #000;
+
+  /* Utility styles/helper-text-01 */
+  font-family: var(
+    --fixed-utility-helper-text-0102-font-family,
+    "IBM Plex Sans"
+  );
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 16px; /* 133.333% */
+  letter-spacing: 0.32px;
+}
+
+.bold {
+  font-weight: 700;
+}
+
+.outdent {
+  margin-left: 20px;
+}
+
+.footer-wrapper {
+  /* background-color: red; */
+  /* position: absolute; */
+  /* bottom: 0px; */
+  /* right: 0px; */
+  /* left: 0px; */
+  width: 100%;
+
+  display: flex;
+  /* flex-direction: row;
+  align-items: flex-start;
+  align-self: stretch;
+  padding-left: 0px;
+  padding-right: 0px; */
+}
+
+.footer-wrapper > cv-button {
+}
+
+.bottom0 {
+  bottom: 0;
+}
+
+.w100 {
+  width: 100%;
+}
+
+.w90 {
+  width: 90%;
+}
+
+.h-stretch div {
+  flex: 1 1 0;
+  /* border: 1px solid yellow; */
+  /* background: pink; */
+  /* text-align: center; */
+  min-height: 20px;
+}
+
+.w50 {
+  /* display: relative; */
+  /* align-self: stretch; */
+  width: 50%;
+  /* height: 100%; */
+  /* bottom: 0; */
+  /* top: 0; */
+}
+
+.frame-progress {
+  margin-bottom: 75px;
+}
+
+flex {
+  display: flex;
+}
+
+ul li {
+  width: 100%;
+}
+
+.w10 {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  align-self: stretch;
+  justify-content: space-between;
+}
+
+.border1gray {
+  border-width: 1px;
+  border-color: var(--border-subtle-contextual);
+}
+
+.gradient {
+  color: white;
+  padding: 16px;
+  background: var(
+    --Gradient,
+    linear-gradient(90deg, #001d6c -3.12%, #6929c4 80.7%)
+  );
+  /* background: linear-gradient(90deg, #6929C4 0%, rgba(105, 41, 196, 0.80) 50%, red 100%); */
+}
+
+.step-button-left {
+  /* display: flex; */
+  /* float: left; */
+  /* align-items: stretch; */
+  /* height: 400%; */
+  /* flex-grow: 1; */
+  /* max-height: 100%; */
+  /* height:4rem; */
+  /* width: 30%; */
+}
+.step-button-right {
+  /* flex-grow: 1; */
+  /* display: inline-block; */
+  /* float: right; */
+  /* width: 30%; */
+}
+
+.frame-content {
+  width: 100% !important;
+  padding: 16px;
+  height: max-content;
+}
+
+.background_white {
+  /* display: block; */
+  background: white;
+  /* flex-direction: column; */
+  /* height: auto; */
+  /* align-self: stretch; */
+  /* background: var(--color-gray-200, currentcolor); */
+}
+
+.map {
+  background: url("@/assets/map.png") lightgray 35% / cover no-repeat;
+  width: 100%;
+  height: 550px;
+  /* height: auto; */
+  /* object-fit: none; */
+  /* background-size: auto 100%; */
+  /* height: 100%; */
+  /* background: url("@/assets/map.png");
+    background-size: cover;
+    background-repeat:   no-repeat;
+    background-position: center center; */
+}
+
+.gantt {
+  background: url("@/assets/gantt.png") lightgray 35% / cover no-repeat;
+  width: 100%;
+  height: 630px;
+}
+
+.barchart {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 16px;
+  align-self: stretch;
+
+  background: white;
+}
+
+.chart-content {
+  display: flex;
+  width: 717px;
+  height: 403px;
+  padding: 16px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.frame2 {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+  align-self: stretch;
+}
+
+.barChart {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 16px;
+  align-self: stretch;
+}
+
+.cv-grid {
+  right: 0;
+  margin-right: 0px;
+  padding-right: 0px;
+}
+
+.noMargins {
+  margin: 0rem;
+}
+
+.negativeTopMargin1 {
+  margin-top: -1rem;
+}
+
+.noPad {
+  padding: 0px;
+  height: 100%;
+}
+
+.pad16 {
+  padding: 16px;
+}
+
+.cv-list {
+  padding-left: 20px;
+}
+
+.checkbox.background-4-1-1.active {
+  background: var(--cds-charts-4-1-1, #6929c4);
+}
+.checkbox.background-4-1-2.active {
+  background: var(--cds-charts-4-1-2, #012749);
+}
+.checkbox.background-4-1-3.active {
+  background: var(--cds-charts-4-1-3, #009d9a);
+}
+.checkbox.background-4-1-4.active {
+  background: var(--cds-charts-4-1-4, #ee5396);
+}
+
+/* .bx--data-table thead {
+    height: 0px;
+} */
+
+.bx--structured-list {
+  margin-bottom: 0px;
+}
+
+.bx--structured-list-row.bx--structured-list-row--header-row {
+  border-bottom: 0px;
+}
+.bx--structured-list-row {
+  border-bottom: 0px;
+}
+
+.bx--data-table tr {
+  height: 0px;
+}
+
+.bx--grid {
+  max-width: 105rem;
+}
+
+.no-lines .bx--data-table td {
+  border-bottom: 0px;
+}
+
+.qualification-header {
+  color: #000;
+
+  /* Fixed heading styles/heading-compact-01 */
+  font-family: var(--Fixed-Heading-Font-family, "IBM Plex Sans");
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 18px; /* 128.571% */
+  letter-spacing: 0.16px;
+}
+
+.modal-header {
+  color: var(--Text-text-primary, #161616);
+
+  /* Fixed heading styles/heading-02 */
+  font-family: var(--Fixed-Heading-Font-family, "IBM Plex Sans");
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 24px; /* 150% */
+}
+
+.ai-label {
+  display: flex;
+  width: 24px;
+  height: 24px;
+  padding: 3px;
+  justify-content: center;
+  align-items: center;
+  flex-shrink: 0;
+
+  border: 1px solid var(--Border-border-inverse, #161616);
+  background: var(--Transparent, rgba(255, 255, 255, 0));
+  background-blend-mode: multiply;
+}
+
+tr.bx--parent-row.bx--expandable-row + tr[data-child-row] td {
+  padding-left: 1rem;
+}
+
+.nested.bx--data-table td, .bx--data-table tbody th  {
+    padding-left: 0px;
+}
+
+.popup {
+  display: none;
+  position: fixed;
+  bottom: 16px;
+  right: 16px;
+  height: 150px;
+  width: 300px;
+  background: green;
+
+  display: flex;
+  padding: 10px;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.popup-left {
+  width: 16px;
+}
+
+.popup-middle {
+  width: auto;
+  padding-left: 10px;
+  padding-right: 5px;
+}
+
+.popup-right {
+  width: 16px;
+}
+
+.border-left {
+  /* border-color: var(--Text-text-error, #da1e28); */
+  border-left-width: 2px;
+  border-style: solid;
+}
+.border-green {
+  /* background: var(--Support-support-success, #24A148); */
+  border-color: var(--Support-support-success, #24a148);
+}
+
+.green {
+  background: var(--Notification-notification-success-background, #defbe6);
+  /* Shadows/Menu */
+  box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.3);
+}
+
+.align-r {
+  /* align-items: flex-end; */
+  text-align: right;
+}
+
+/* .inline {
+  display: inline-flex;
+}
+
+.bx--btn {
+  min-height: 14px;
+} */
+
+/* .button_ghost {
+  height: 100%;
+  padding: 0px;
+} */
+</style>
