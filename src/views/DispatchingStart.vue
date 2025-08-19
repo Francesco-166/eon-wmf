@@ -59,6 +59,7 @@ const resources = ref(resourcesData)
 const providers = ref(providersData)
 // console.warn(resources.value)
 const selectPlanningModeModalVisible = ref(false)
+const theme = ref(useStorage('theme', 'g10'))
 
 const options = computed(() => {
   return {
@@ -83,10 +84,9 @@ const options = computed(() => {
   }
 })
 
-const theme = ref(useStorage('theme', 'g10'))
 // console.log(options.value)
-donutOptions.value.theme = theme.value
-options.value.theme = theme.value
+// donutOptions.value.theme = theme.value
+// options.value.theme = theme.value
 
 // console.log(donutData);
 // console.log(donutOptions);

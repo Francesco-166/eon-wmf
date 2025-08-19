@@ -36,7 +36,7 @@ import {
 } from '@carbon/icons-vue'
 import calendarData0 from '@/assets/data/annualPlanningCapacityCalendarData.ts'
 import chartData from '@/assets/data/annualPlanningCapacityStackedBarChartData.ts'
-import chartOptions from '@/assets/data/annualPlanningCapacityStackedBarChartOptions.ts'
+// import chartOptions from '@/assets/data/annualPlanningCapacityStackedBarChartOptions.ts'
 import resourcesData from '@/assets/data/annualPlanningInternalResources.ts'
 import providersData from '@/assets/data/annualPlanningExternalProviders.ts'
 
@@ -44,7 +44,7 @@ const router = useRouter()
 
 const calendarData = ref(calendarData0)
 const data = ref(chartData)
-const options = ref(chartOptions)
+// const options = ref(chartOptions)
 const resources = ref(resourcesData)
 const providers = ref(providersData)
 // console.warn(resources.value)
@@ -54,6 +54,41 @@ const providers = ref(providersData)
 
 const { t, i18next } = useTranslation()
 const langStore = useLanguageStore()
+
+import { useStorage } from '@vueuse/core'
+const theme = ref(useStorage('theme', 'g10'))
+const options = computed(() => {
+  return {
+    // title: 'Work order distribution by Month',
+    theme: theme.value,
+    axes: {
+      left: {
+        scaleType: 'labels',
+        margins: '0',
+        // mapsTo: 'key',
+        stacked: true,
+        // title: '%',
+        visible: false,
+      },
+      bottom: {
+        stacked: true,
+        mapsTo: 'value',
+        percentage: true,
+        // scaleType: 'labels'
+        visible: false,
+      },
+    },
+    grid: {
+      x: {
+        enabled: false,
+      },
+    },
+    toolbar: {
+      enabled: false,
+    },
+    height: '100px',
+  }
+})
 
 const hideIcon = HideIcon
 const fishStore = useFishStore()

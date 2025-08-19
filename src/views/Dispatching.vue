@@ -49,6 +49,7 @@ const providers = ref(providersData)
 // console.warn(resources.value)
 const selectPlanningModeModalVisible = ref(false)
 
+const theme = ref(useStorage('theme', 'g10'))
 const options = computed(() => {
   return {
     title: 'Work order distribution by Month',
@@ -68,8 +69,7 @@ const options = computed(() => {
   }
 })
 
-const theme = ref(useStorage('theme', 'g10'))
-options.value.theme = theme.value
+// options.value.theme = theme.value
 
 // const planningModeAI = ref(true);
 // const planningModeManual = ref(false);

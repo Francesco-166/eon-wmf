@@ -47,7 +47,7 @@ import woData0 from '@/assets/data/dispatchingReviewWoData.ts'
 import resourcesData from '@/assets/data/annualPlanningInternalResources.ts'
 import providersData from '@/assets/data/annualPlanningExternalProviders.ts'
 
-import { useStorage } from '@vueuse/core'
+// import { useStorage } from '@vueuse/core'
 
 const router = useRouter()
 const data = ref(data0)
@@ -58,8 +58,9 @@ const woData = ref(woData0)
 // console.warn(resources.value)
 const selectPlanningModeModalVisible = ref(false)
 const showNotification = ref(true)
-const theme = ref(useStorage('theme', 'g10'))
 
+import { useStorage } from '@vueuse/core'
+const theme = ref(useStorage('theme', 'g10'))
 const options = computed(() => {
   return {
     title: 'Utilisation Week 1: 01.01. - 05.01.',

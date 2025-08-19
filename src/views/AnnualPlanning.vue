@@ -45,7 +45,7 @@ import { CcvStackedBarChart } from '@carbon/charts-vue'
 const theme = ref(useStorage('theme', 'g10'))
 
 // const theme = Switcher.theme
-console.log(theme.value)
+// console.log(theme.value)
 
 const router = useRouter()
 const data = ref(chartData)
