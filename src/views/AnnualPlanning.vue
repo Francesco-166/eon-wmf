@@ -49,9 +49,26 @@ console.log(theme.value)
 
 const router = useRouter()
 const data = ref(chartData)
-const options = ref(chartOptions)
-console.log(options.value)
-options.value.theme = theme.value
+// const options = ref(chartOptions)
+
+// const options = ref({
+//   title: 'Work order distribution by Month',
+//   theme: theme.value, //'g90',
+//   axes: {
+//     left: {
+//       mapsTo: 'value',
+//       stacked: true,
+//       title: '%',
+//     },
+//     bottom: {
+//       mapsTo: 'key',
+//       scaleType: 'labels',
+//     },
+//   },
+//   height: '400px',
+// })
+// console.log(options.value)
+// options.value.theme = theme.value
 const resources = ref(resourcesData)
 const providers = ref(providersData)
 // console.warn(resources.value)
@@ -143,12 +160,50 @@ watch(filteredFish, () => {
   pagination.value.numberOfItems = filteredFish.value.length
 })
 
-watch(theme, () => {
-  console.log('theme changed')
-  options.value.theme = theme.value
-  console.log(barChart.value)
-  console.log(options.value)
+const options = computed(() => {
+  return {
+    title: 'Work order distribution by Month',
+    theme: theme.value, //'g90',
+    axes: {
+      left: {
+        mapsTo: 'value',
+        stacked: true,
+        title: '%',
+      },
+      bottom: {
+        mapsTo: 'key',
+        scaleType: 'labels',
+      },
+    },
+    height: '400px',
+  }
 })
+
+// watch(theme, () => {
+//   console.log('theme changed')
+//   // const options0 = options.value
+//   // options0.theme = theme.value
+//   // console.log(options0)
+//   // options.value = options0
+//   // console.log(options.value)
+//   // options.value.theme = 'g10'
+//   options.value = {
+//     title: 'Work order distribution by Month',
+//     theme: theme.value, //'g90',
+//     axes: {
+//       left: {
+//         mapsTo: 'value',
+//         stacked: true,
+//         title: '%',
+//       },
+//       bottom: {
+//         mapsTo: 'key',
+//         scaleType: 'labels',
+//       },
+//     },
+//     height: '400px',
+//   }
+// })
 
 function selectPlanningMode() {
   console.warn('seelectPlanningMode')

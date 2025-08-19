@@ -28,8 +28,8 @@ function gotoDispatchingStart() {
             <div class="title-frame">
               <div class="title">E.ON Work Force Management MVP</div>
               <div class="subtitle">
-                This is an implemented MVP application showcasing a "happy path" for AI-assisted
-                annual planning and dispatching.
+                Implemented MVP application showcasing a "happy path" for AI-assisted annual
+                planning and dispatching.
               </div>
             </div>
           </div>

@@ -8,7 +8,7 @@ console.log(theme.value)
 
 export default {
   title: 'Work order distribution by Month',
-  // theme: theme.value, //'g90',
+  theme: theme.value, //'g90',
   axes: {
     left: {
       mapsTo: 'value',

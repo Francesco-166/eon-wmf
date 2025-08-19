@@ -54,11 +54,34 @@ const router = useRouter()
 const donutData = ref(donutData0)
 const data = ref(chartData)
 const donutOptions = ref(donutOptions0)
-const options = ref(chartOptions)
+// const options = ref(chartOptions)
 const resources = ref(resourcesData)
 const providers = ref(providersData)
 // console.warn(resources.value)
 const selectPlanningModeModalVisible = ref(false)
+
+const options = computed(() => {
+  return {
+    title: '', //'Work order distribution by Month',
+    theme: theme.value,
+    axes: {
+      left: {
+        mapsTo: 'value',
+        stacked: true,
+        title: '%',
+        percentage: true,
+      },
+      bottom: {
+        mapsTo: 'key',
+        scaleType: 'labels',
+      },
+    },
+    toolbar: {
+      enabled: false,
+    },
+    height: '400px',
+  }
+})
 
 const theme = ref(useStorage('theme', 'g10'))
 // console.log(options.value)
@@ -515,6 +538,7 @@ const { md, carbonMd } = useBreakpoints()
 }
 
 .popup-middle {
+  color: black;
   width: auto;
   padding-left: 10px;
   padding-right: 5px;

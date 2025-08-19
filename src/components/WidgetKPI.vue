@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 // import {
 //   Parameter16 as ParameterIcon,
 //   Edit16 as EditIcon,

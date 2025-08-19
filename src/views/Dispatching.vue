@@ -35,7 +35,7 @@ import {
   // ColorPalette20 as ThemeIcon,
 } from '@carbon/icons-vue'
 import chartData from '@/assets/data/annualPlanningStackedBarChartData.ts'
-import chartOptions from '@/assets/data/annualPlanningStackedBarChartOptions.ts'
+// import chartOptions from '@/assets/data/annualPlanningStackedBarChartOptions.ts'
 import resourcesData from '@/assets/data/annualPlanningInternalResources.ts'
 import providersData from '@/assets/data/annualPlanningExternalProviders.ts'
 
@@ -43,11 +43,30 @@ import { useStorage } from '@vueuse/core'
 
 const router = useRouter()
 const data = ref(chartData)
-const options = ref(chartOptions)
+// const options = ref(chartOptions)
 const resources = ref(resourcesData)
 const providers = ref(providersData)
 // console.warn(resources.value)
 const selectPlanningModeModalVisible = ref(false)
+
+const options = computed(() => {
+  return {
+    title: 'Work order distribution by Month',
+    theme: theme.value, //'g90',
+    axes: {
+      left: {
+        mapsTo: 'value',
+        stacked: true,
+        title: '%',
+      },
+      bottom: {
+        mapsTo: 'key',
+        scaleType: 'labels',
+      },
+    },
+    height: '400px',
+  }
+})
 
 const theme = ref(useStorage('theme', 'g10'))
 options.value.theme = theme.value
