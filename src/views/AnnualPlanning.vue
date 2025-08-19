@@ -281,7 +281,7 @@ const { md, carbonMd } = useBreakpoints()
           <div class="widget-wrap">
             <!-- <cv-column> -->
             <!-- <cv-tile> -->
-            <WidgetKPI class="cds-ui-02">
+            <WidgetKPI>
               <template #title>
                 <parameter-icon />
                 Title
