@@ -43,7 +43,7 @@ import {
 } from '@carbon/icons-vue'
 import data0 from '@/assets/data/dispatchingReviewUtilisationData.ts'
 import woData0 from '@/assets/data/dispatchingReviewWoData.ts'
-// import chartOptions from '@/assets/data/dispatchingReviewUtilisationStackedBarChartOptions.ts'
+import chartOptions from '@/assets/data/dispatchingReviewUtilisationStackedBarChartOptions.ts'
 import resourcesData from '@/assets/data/annualPlanningInternalResources.ts'
 import providersData from '@/assets/data/annualPlanningExternalProviders.ts'
 
@@ -52,33 +52,33 @@ import providersData from '@/assets/data/annualPlanningExternalProviders.ts'
 const router = useRouter()
 const data = ref(data0)
 const woData = ref(woData0)
-// const options = ref(chartOptions)
+const options = ref(chartOptions)
 // const resources = ref(resourcesData)
 // const providers = ref(providersData)
 // console.warn(resources.value)
 const selectPlanningModeModalVisible = ref(false)
 const showNotification = ref(true)
 
-import { useStorage } from '@vueuse/core'
-const theme = ref(useStorage('theme', 'g10'))
-const options = computed(() => {
-  return {
-    title: 'Utilisation Week 1: 01.01. - 05.01.',
-    theme: theme.value,
-    axes: {
-      left: {
-        mapsTo: 'value',
-        stacked: true,
-        title: '%',
-      },
-      bottom: {
-        mapsTo: 'key',
-        scaleType: 'labels',
-      },
-    },
-    height: '400px',
-  }
-})
+// import { useStorage } from '@vueuse/core'
+// const theme = ref(useStorage('theme', 'g10'))
+// const options = computed(() => {
+//   return {
+//     title: 'Utilisation Week 1: 01.01. - 05.01.',
+//     theme: theme.value,
+//     axes: {
+//       left: {
+//         mapsTo: 'value',
+//         stacked: true,
+//         title: '%',
+//       },
+//       bottom: {
+//         mapsTo: 'key',
+//         scaleType: 'labels',
+//       },
+//     },
+//     height: '400px',
+//   }
+// })
 
 function hideNotification() {
   console.warn('hideNotification')

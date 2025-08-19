@@ -49,7 +49,7 @@ const theme = ref(useStorage('theme', 'g10'))
 
 const router = useRouter()
 const data = ref(chartData)
-// const options = ref(chartOptions)
+const options = ref(chartOptions)
 
 // const options = ref({
 //   title: 'Work order distribution by Month',
@@ -160,24 +160,24 @@ watch(filteredFish, () => {
   pagination.value.numberOfItems = filteredFish.value.length
 })
 
-const options = computed(() => {
-  return {
-    title: 'Work order distribution by Month',
-    theme: theme.value, //'g90',
-    axes: {
-      left: {
-        mapsTo: 'value',
-        stacked: true,
-        title: '%',
-      },
-      bottom: {
-        mapsTo: 'key',
-        scaleType: 'labels',
-      },
-    },
-    height: '400px',
-  }
-})
+// const options = computed(() => {
+//   return {
+//     title: 'Work order distribution by Month',
+//     theme: theme.value, //'g90',
+//     axes: {
+//       left: {
+//         mapsTo: 'value',
+//         stacked: true,
+//         title: '%',
+//       },
+//       bottom: {
+//         mapsTo: 'key',
+//         scaleType: 'labels',
+//       },
+//     },
+//     height: '400px',
+//   }
+// })
 
 // watch(theme, () => {
 //   console.log('theme changed')

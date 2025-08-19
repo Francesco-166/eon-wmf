@@ -1,6 +1,6 @@
 #FROM node:18
-# FROM node:lts-alpine
-FROM node:23.9
+FROM node:lts-alpine
+# FROM node:23.9
 
 # install simple http server for serving static content
 RUN npm install -g http-server

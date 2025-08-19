@@ -42,7 +42,7 @@ import {
 import donutData0 from '@/assets/data/annualPlanningStartDonutData.ts'
 import chartData from '@/assets/data/annualPlanningStartCapacityStackedBarChartData.ts'
 import donutOptions0 from '@/assets/data/annualPlanningStartDonutOptions.ts'
-// import chartOptions from '@/assets/data/annualPlanningStartCapacityStackedBarChartOptions.ts'
+import chartOptions from '@/assets/data/annualPlanningStartCapacityStackedBarChartOptions.ts'
 import resourcesData from '@/assets/data/annualPlanningInternalResources.ts'
 import providersData from '@/assets/data/annualPlanningExternalProviders.ts'
 import { useStorage } from '@vueuse/core'
@@ -51,35 +51,35 @@ const router = useRouter()
 const donutData = ref(donutData0)
 const data = ref(chartData)
 const donutOptions = ref(donutOptions0)
-// const options = ref(chartOptions)
+const options = ref(chartOptions)
 const resources = ref(resourcesData)
 const providers = ref(providersData)
 // console.warn(resources.value)
 const selectPlanningModeModalVisible = ref(false)
 
-const theme = ref(useStorage('theme', 'g10'))
-const options = computed(() => {
-  return {
-    title: '', //'Work order distribution by Month',
-    theme: theme.value,
-    axes: {
-      left: {
-        mapsTo: 'value',
-        stacked: true,
-        title: '%',
-        percentage: true,
-      },
-      bottom: {
-        mapsTo: 'key',
-        scaleType: 'labels',
-      },
-    },
-    toolbar: {
-      enabled: false,
-    },
-    height: '400px',
-  }
-})
+// const theme = ref(useStorage('theme', 'g10'))
+// const options = computed(() => {
+//   return {
+//     title: '', //'Work order distribution by Month',
+//     theme: theme.value,
+//     axes: {
+//       left: {
+//         mapsTo: 'value',
+//         stacked: true,
+//         title: '%',
+//         percentage: true,
+//       },
+//       bottom: {
+//         mapsTo: 'key',
+//         scaleType: 'labels',
+//       },
+//     },
+//     toolbar: {
+//       enabled: false,
+//     },
+//     height: '400px',
+//   }
+// })
 
 // console.log(donutData);
 // console.log(donutOptions);
